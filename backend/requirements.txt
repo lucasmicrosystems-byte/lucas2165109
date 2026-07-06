@@ -3,3 +3,5 @@ uvicorn
 sqlalchemy
 pydantic
 python-multipart
+email-validator
+psycopg2-binary
