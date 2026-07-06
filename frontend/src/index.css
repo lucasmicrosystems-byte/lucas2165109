@@ -1,0 +1,65 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap');
+
+:root {
+  /* Theme 1: Organic & Earthy (Default) */
+  --color-primary: #1b4332;       /* Forest Green */
+  --color-primary-light: #40916c; /* Leaf Green */
+  --color-secondary: #e6d3c3;     /* Warm Sand */
+  --color-secondary-dark: #b85d32; /* Terracotta */
+  --color-background: #FAF7F2;    /* Off-white */
+  --color-background-soft: #f4eae1; /* Cream */
+  --color-accent: #f9c74f;        /* Sunny Yellow */
+  --color-accent-dark: #f9844a;   /* Carrot Orange */
+  --font-family: 'Outfit', sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-primary);
+  font-family: var(--font-family), sans-serif;
+  min-height: 100vh;
+}
+
+/* Theme 2: Modern & Tech-Driven */
+body.theme-tech {
+  --color-primary: #0F172A;       /* Deep Navy Blue */
+  --color-primary-light: #334155; /* Charcoal/Slate */
+  --color-secondary: #10B981;     /* Bright Kelly Green */
+  --color-secondary-dark: #047857; /* Emerald */
+  --color-background: #F8FAFC;    /* White/Light Slate */
+  --color-background-soft: #E2E8F0; /* Light Slate Gray */
+  --color-accent: #0EA5E9;        /* Sky Blue */
+  --color-accent-dark: #84CC16;   /* Electric Lime */
+  --font-family: 'Inter', sans-serif;
+}
+
+/* Smooth Scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Micro-animations and transitions */
+.transition-theme {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, transform 0.2s ease;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-background-soft);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-primary-light);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary);
+}

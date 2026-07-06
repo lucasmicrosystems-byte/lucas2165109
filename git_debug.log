@@ -1,0 +1,182 @@
+Start: Mon 07/06/2026 12:30:03.15 
+ 
+=== PATH CHECK === 
+C:\Program Files\Git\cmd\git.exe
+ 
+=== DIRECTORY LIST === 
+ Volume in drive C has no label.
+ Volume Serial Number is 98AA-6908
+
+ Directory of C:\Users\Hemu\.gemini\antigravity\scratch\Agriverse
+
+07/06/2026  12:30 PM    <DIR>          .
+07/06/2026  10:49 AM    <DIR>          ..
+07/06/2026  12:24 PM                88 .gitignore
+07/06/2026  11:47 AM    <DIR>          backend
+07/06/2026  12:12 PM             3,155 debug_log.txt
+07/06/2026  11:00 AM    <DIR>          frontend
+07/06/2026  12:30 PM               122 git_debug.log
+07/06/2026  12:28 PM               942 git_test.bat
+07/06/2026  12:26 PM             3,073 push_to_github.bat
+07/06/2026  11:01 AM             2,911 README.md
+07/06/2026  11:11 AM               429 run_server.bat
+07/06/2026  11:19 AM               725 run_server_debug.bat
+               8 File(s)         11,445 bytes
+               4 Dir(s)  20,596,301,824 bytes free
+ 
+=== GIT STATUS BEFORE === 
+On branch main
+
+No commits yet
+
+Changes to be committed:
+  (use "git rm --cached <file>..." to unstage)
+	new file:   .gitignore
+	new file:   README.md
+	new file:   backend/app/__pycache__/main.cpython-313.pyc
+	new file:   backend/app/database/__pycache__/database.cpython-313.pyc
+	new file:   backend/app/database/__pycache__/seed.cpython-313.pyc
+	new file:   backend/app/database/database.py
+	new file:   backend/app/database/seed.py
+	new file:   backend/app/main.py
+	new file:   backend/app/models/__pycache__/models.cpython-313.pyc
+	new file:   backend/app/models/models.py
+	new file:   backend/app/routes/__pycache__/api.cpython-313.pyc
+	new file:   backend/app/routes/api.py
+	new file:   backend/app/schemas/__pycache__/schemas.cpython-313.pyc
+	new file:   backend/app/schemas/schemas.py
+	new file:   backend/app/static/logo.png
+	new file:   backend/app/templates/index.html
+	new file:   backend/requirements.txt
+	new file:   frontend/index.html
+	new file:   frontend/package.json
+	new file:   frontend/postcss.config.js
+	new file:   frontend/src/App.jsx
+	new file:   frontend/src/assets/logo.png
+	new file:   frontend/src/components/AiAssistantWidget.jsx
+	new file:   frontend/src/components/CropCard.jsx
+	new file:   frontend/src/components/DashboardCard.jsx
+	new file:   frontend/src/components/FarmTaskWidget.jsx
+	new file:   frontend/src/components/Footer.jsx
+	new file:   frontend/src/components/Navbar.jsx
+	new file:   frontend/src/components/ProductCard.jsx
+	new file:   frontend/src/components/Sidebar.jsx
+	new file:   frontend/src/components/WeatherCard.jsx
+	new file:   frontend/src/hooks/LanguageContext.jsx
+	new file:   frontend/src/hooks/ThemeContext.jsx
+	new file:   frontend/src/index.css
+	new file:   frontend/src/main.jsx
+	new file:   frontend/src/pages/Contact.jsx
+	new file:   frontend/src/pages/Dashboard.jsx
+	new file:   frontend/src/pages/Home.jsx
+	new file:   frontend/src/pages/LearningCenter.jsx
+	new file:   frontend/src/pages/Login.jsx
+	new file:   frontend/src/pages/Marketplace.jsx
+	new file:   frontend/src/pages/Scanner.jsx
+	new file:   frontend/src/pages/Search.jsx
+	new file:   frontend/src/pages/Weather.jsx
+	new file:   frontend/src/services/api.js
+	new file:   frontend/tailwind.config.js
+	new file:   frontend/vite.config.js
+	new file:   git_test.bat
+	new file:   push_to_github.bat
+	new file:   run_server.bat
+	new file:   run_server_debug.bat
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	git_debug.log
+
+ 
+=== CONFIG CHECK === 
+core.repositoryformatversion=0
+core.filemode=false
+core.bare=false
+core.logallrefupdates=true
+core.symlinks=false
+core.ignorecase=true
+ 
+=== STAGING FILES === 
+warning: in the working copy of 'git_debug.log', LF will be replaced by CRLF the next time Git touches it
+On branch main
+
+No commits yet
+
+Changes to be committed:
+  (use "git rm --cached <file>..." to unstage)
+	new file:   .gitignore
+	new file:   README.md
+	new file:   backend/app/__pycache__/main.cpython-313.pyc
+	new file:   backend/app/database/__pycache__/database.cpython-313.pyc
+	new file:   backend/app/database/__pycache__/seed.cpython-313.pyc
+	new file:   backend/app/database/database.py
+	new file:   backend/app/database/seed.py
+	new file:   backend/app/main.py
+	new file:   backend/app/models/__pycache__/models.cpython-313.pyc
+	new file:   backend/app/models/models.py
+	new file:   backend/app/routes/__pycache__/api.cpython-313.pyc
+	new file:   backend/app/routes/api.py
+	new file:   backend/app/schemas/__pycache__/schemas.cpython-313.pyc
+	new file:   backend/app/schemas/schemas.py
+	new file:   backend/app/static/logo.png
+	new file:   backend/app/templates/index.html
+	new file:   backend/requirements.txt
+	new file:   frontend/index.html
+	new file:   frontend/package.json
+	new file:   frontend/postcss.config.js
+	new file:   frontend/src/App.jsx
+	new file:   frontend/src/assets/logo.png
+	new file:   frontend/src/components/AiAssistantWidget.jsx
+	new file:   frontend/src/components/CropCard.jsx
+	new file:   frontend/src/components/DashboardCard.jsx
+	new file:   frontend/src/components/FarmTaskWidget.jsx
+	new file:   frontend/src/components/Footer.jsx
+	new file:   frontend/src/components/Navbar.jsx
+	new file:   frontend/src/components/ProductCard.jsx
+	new file:   frontend/src/components/Sidebar.jsx
+	new file:   frontend/src/components/WeatherCard.jsx
+	new file:   frontend/src/hooks/LanguageContext.jsx
+	new file:   frontend/src/hooks/ThemeContext.jsx
+	new file:   frontend/src/index.css
+	new file:   frontend/src/main.jsx
+	new file:   frontend/src/pages/Contact.jsx
+	new file:   frontend/src/pages/Dashboard.jsx
+	new file:   frontend/src/pages/Home.jsx
+	new file:   frontend/src/pages/LearningCenter.jsx
+	new file:   frontend/src/pages/Login.jsx
+	new file:   frontend/src/pages/Marketplace.jsx
+	new file:   frontend/src/pages/Scanner.jsx
+	new file:   frontend/src/pages/Search.jsx
+	new file:   frontend/src/pages/Weather.jsx
+	new file:   frontend/src/services/api.js
+	new file:   frontend/tailwind.config.js
+	new file:   frontend/vite.config.js
+	new file:   git_debug.log
+	new file:   git_test.bat
+	new file:   push_to_github.bat
+	new file:   run_server.bat
+	new file:   run_server_debug.bat
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   git_debug.log
+
+ 
+=== COMMITTING === 
+Author identity unknown
+
+*** Please tell me who you are.
+
+Run
+
+  git config --global user.email "you@example.com"
+  git config --global user.name "Your Name"
+
+to set your account's default identity.
+Omit --global to set the identity only in this repository.
+
+fatal: empty ident name (for <>) not allowed
+fatal: your current branch 'main' does not have any commits yet
+ 
+=== BRANCHES === 

@@ -1,0 +1,2049 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/svg+xml" href="https://img.icons8.com/color/48/sprout.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AgriVerse – Smart Farming Ecosystem</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- React & Axios & Babel -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://unpkg.com/regenerator-runtime@0.13.11/runtime.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    :root {
+      --color-primary: #1b4332;
+      --color-primary-light: #40916c;
+      --color-secondary: #e6d3c3;
+      --color-secondary-dark: #b85d32;
+      --color-background: #FAF7F2;
+      --color-background-soft: #f4eae1;
+      --color-accent: #f9c74f;
+      --color-accent-dark: #f9844a;
+      --font-family: 'Outfit', sans-serif;
+      transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+    }
+
+    body {
+      background-color: var(--color-background);
+      color: var(--color-primary);
+      font-family: var(--font-family), sans-serif;
+      min-height: 100vh;
+    }
+
+    body.theme-tech {
+      --color-primary: #0F172A;
+      --color-primary-light: #334155;
+      --color-secondary: #10B981;
+      --color-secondary-dark: #047857;
+      --color-background: #F8FAFC;
+      --color-background-soft: #E2E8F0;
+      --color-accent: #0EA5E9;
+      --color-accent-dark: #84CC16;
+      --font-family: 'Inter', sans-serif;
+    }
+
+    .theme-color-primary { color: var(--color-primary); }
+    .theme-bg-primary { background-color: var(--color-primary); }
+    .theme-bg-primary-light { background-color: var(--color-primary-light); }
+    .theme-border-primary { border-color: var(--color-primary); }
+    .theme-bg-soft { background-color: var(--color-background-soft); }
+
+    /* Custom scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--color-background-soft);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--color-primary-light);
+      border-radius: 3px;
+    }
+  </style>
+
+  <script>
+    // Custom tailwind configuration hook
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              DEFAULT: 'var(--color-primary)',
+              light: 'var(--color-primary-light)',
+            },
+            secondary: {
+              DEFAULT: 'var(--color-secondary)',
+              dark: 'var(--color-secondary-dark)',
+            },
+            background: {
+              DEFAULT: 'var(--color-background)',
+              soft: 'var(--color-background-soft)',
+            },
+            accent: {
+              DEFAULT: 'var(--color-accent)',
+              dark: 'var(--color-accent-dark)',
+            }
+          },
+          fontFamily: {
+            sans: ['var(--font-family)', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+
+    // --- TRANSLATION DICTIONARY ---
+    const translations = {
+      en: {
+        app_name: "AgriVerse",
+        tagline: "Smart Farming Ecosystem",
+        nav_home: "Home",
+        nav_dashboard: "Dashboard",
+        nav_marketplace: "Marketplace",
+        nav_weather: "Weather",
+        nav_scanner: "Leaf Scanner",
+        nav_learning: "Learning Center",
+        nav_contact: "Contact",
+        nav_search: "Search",
+        btn_login: "Farmer Login",
+        btn_logout: "Logout",
+        btn_signup: "Sign Up",
+        loading: "Loading...",
+        theme_organic: "Organic & Earthy",
+        theme_tech: "Modern & Tech-Driven",
+        hero_title: "Empowering Farmers with Smart AgTech",
+        hero_subtitle: "Predict weather, scan crop diseases, manage tasks, and trade on our local marketplace - all in one unified platform.",
+        quick_start: "Quick Actions",
+        action_scan: "Scan Leaf",
+        action_market: "Visit Market",
+        action_weather: "Weather Info",
+        intro_title: "Cultivating the Future",
+        intro_desc: "AgriVerse brings modern technology to traditional farming. Our ecosystem integrates live environmental data, AI-driven diagnostics, and a decentralized farmer market to optimize your yield.",
+        dash_title: "Smart Farm Analytics",
+        dash_soil: "Soil Quality Monitoring",
+        dash_soil_desc: "Soil pH: 6.5 (Optimal) | Nitrogen: Good | Phosphorus: Medium",
+        dash_irrigation: "Irrigation Logs",
+        dash_irrigation_desc: "Last watered: 4 hours ago. Next scheduled: Tomorrow 6:00 AM.",
+        dash_prediction: "AI Crop Suitability Prediction",
+        dash_prediction_desc: "Based on soil & climate, your soil is 94% suitable for Ragi and Tomatoes.",
+        dash_tasks: "Farm Chores (To-Do List)",
+        task_placeholder: "Enter task name...",
+        task_due: "Due Date",
+        btn_add_task: "Add Task",
+        no_tasks: "No pending tasks! Enjoy your day.",
+        weather_title: "Weather Station",
+        weather_humidity: "Humidity",
+        weather_rainfall: "Rainfall",
+        weather_rain_predict: "Rain Forecast",
+        weather_alerts: "Critical Alerts",
+        weather_no_alerts: "No severe weather warnings in your region.",
+        weather_warning_rain: "Heavy rain expected tomorrow. Avoid spraying fertilizer.",
+        market_title: "Farmer's Marketplace",
+        market_subtitle: "Buy and Sell farming tools, seeds, organic fertilizers, and fresh crop produce.",
+        market_filter_all: "All Categories",
+        market_filter_seeds: "Seeds",
+        market_filter_fert: "Fertilizers",
+        market_filter_tools: "Farming Tools",
+        market_filter_crops: "Crops",
+        market_price: "Price",
+        market_seller: "Seller",
+        market_contact: "Contact",
+        market_sell_item: "List Your Product",
+        market_prod_name: "Product Name",
+        market_category: "Category",
+        market_desc: "Description",
+        market_list_success: "Product listed successfully!",
+        scanner_title: "AI Leaf Disease Scanner",
+        scanner_subtitle: "Upload leaf image to identify disease, organic treatments and remedies.",
+        scanner_drop: "Click to upload or drag leaf image here",
+        scanner_btn: "Analyze Leaf",
+        scanner_result: "Diagnostic Report",
+        scanner_confidence: "AI Confidence",
+        scanner_remedy: "Chemical Remedy",
+        scanner_organic: "Organic Treatment",
+        search_title: "Smart Agriculture Search",
+        search_placeholder: "Speak or type crop names, tools, fertilizers...",
+        search_mic_listen: "Listening... Speak now.",
+        search_mic_error: "Speech recognition not supported in this browser.",
+        search_results_crops: "Matching Crops & Diseases",
+        search_results_market: "Marketplace Offers",
+        chat_header: "AgriVerse AI Assistant",
+        chat_welcome: "Hello! I am your AgriVerse AI farming helper. Ask me about weather, crop diseases, or marketplace prices.",
+        chat_placeholder: "Ask me a question...",
+        faq_title: "Frequently Asked Questions",
+        contact_title: "Contact AgriVerse Support",
+        contact_name: "Name",
+        contact_email: "Email",
+        contact_msg: "Message",
+        contact_send: "Send Message",
+        contact_success: "Thank you! Our support team will contact you shortly."
+      },
+      hi: {
+        app_name: "एग्रीवर्स",
+        tagline: "स्मार्ट फार्मिंग इकोसिस्टम",
+        nav_home: "मुख्य पृष्ठ",
+        nav_dashboard: "डैशबोर्ड",
+        nav_marketplace: "बाजार",
+        nav_weather: "मौसम",
+        nav_scanner: "पत्ती स्कैनर",
+        nav_learning: "शिक्षा केंद्र",
+        nav_contact: "संपर्क करें",
+        nav_search: "खोजें",
+        btn_login: "किसान लॉगिन",
+        btn_logout: "लॉगआउट",
+        btn_signup: "साइन अप",
+        loading: "लोड हो रहा है...",
+        theme_organic: "जैविक और प्राकृतिक",
+        theme_tech: "आधुनिक और तकनीकी",
+        hero_title: "स्मार्ट एगटेक से किसानों को सशक्त बनाना",
+        hero_subtitle: "मौसम का पूर्वानुमान लगाएं, फसल की बीमारियों को स्कैन करें, कार्यों का प्रबंधन करें और स्थानीय बाजार में व्यापार करें।",
+        quick_start: "त्वरित कार्रवाई",
+        action_scan: "पत्ती स्कैन करें",
+        action_market: "बाजार जाएं",
+        action_weather: "मौसम की जानकारी",
+        intro_title: "भविष्य की खेती",
+        intro_desc: "एग्रीवर्स पारंपरिक खेती में आधुनिक तकनीक लाता है। हमारा इकोसिस्टम लाइव पर्यावरण डेटा, एआई-आधारित निदान और एक विकेंद्रीकृत किसान बाजार को जोड़ता है।",
+        dash_title: "स्मार्ट फार्म एनालिटिक्स",
+        dash_soil: "मिट्टी की गुणवत्ता की निगरानी",
+        dash_soil_desc: "मिट्टी का पीएच: 6.5 (सर्वोत्तम) | नाइट्रोजन: अच्छा | फास्फोरस: मध्यम",
+        dash_irrigation: "सिंचाई लॉग",
+        dash_irrigation_desc: "आखिरी बार पानी दिया: 4 घंटे पहले। अगला निर्धारित: कल सुबह 6:00 बजे।",
+        dash_prediction: "फसल उपयुक्तता पूर्वानुमान",
+        dash_prediction_desc: "मिट्टी और जलवायु के आधार पर, आपकी मिट्टी रागी और टमाटर के लिए 94% उपयुक्त है।",
+        dash_tasks: "खेत के काम (कार्य सूची)",
+        task_placeholder: "कार्य का नाम दर्ज करें...",
+        task_due: "नियत तारीख",
+        btn_add_task: "कार्य जोड़ें",
+        no_tasks: "कोई काम लंबित नहीं है! अपने दिन का आनंद लें।",
+        weather_title: "मौसम केंद्र",
+        weather_humidity: "आर्द्रता",
+        weather_rainfall: "वर्षा",
+        weather_rain_predict: "बारिश का पूर्वानुमान",
+        weather_alerts: "महत्वपूर्ण अलर्ट",
+        weather_no_alerts: "आपके क्षेत्र में कोई गंभीर मौसम की चेतावनी नहीं है।",
+        weather_warning_rain: "कल भारी बारिश की संभावना है। उर्वरक का छिड़काव न करें।",
+        market_title: "किसान बाजार",
+        market_subtitle: "खेती के उपकरण, बीज, जैविक खाद और ताजी फसल खरीदें और बेचें।",
+        market_filter_all: "सभी श्रेणियां",
+        market_filter_seeds: "बीज",
+        market_filter_fert: "उर्वरक",
+        market_filter_tools: "कृषि उपकरण",
+        market_filter_crops: "फसलें",
+        market_price: "कीमत",
+        market_seller: "विक्रेता",
+        market_contact: "संपर्क करें",
+        market_sell_item: "अपना उत्पाद सूचीबद्ध करें",
+        market_prod_name: "उत्पाद का नाम",
+        market_category: "श्रेणी",
+        market_desc: "विवरण",
+        market_list_success: "उत्पाद सफलतापूर्वक सूचीबद्ध किया गया!",
+        scanner_title: "एआई पत्ती रोग स्कैनर",
+        scanner_subtitle: "बीमारियों का पता लगाने, तत्काल जैविक उपचार प्राप्त करने के लिए छवि अपलोड करें।",
+        scanner_drop: "अपलोड करने के लिए क्लिक करें या पत्ती की छवि को यहां खींचें",
+        scanner_btn: "पत्ती का विश्लेषण करें",
+        scanner_result: "नैदानिक रिपोर्ट",
+        scanner_confidence: "एआई सटीकता",
+        scanner_remedy: "रासायनिक उपचार",
+        scanner_organic: "जैविक उपचार",
+        search_title: "स्मार्ट कृषि खोज",
+        search_placeholder: "फसलों के नाम, उपकरण, उर्वरक बोलें या टाइप करें...",
+        search_mic_listen: "सुन रहा हूँ... अब बोलिए।",
+        search_mic_error: "इस ब्राउज़र में भाषण पहचान समर्थित नहीं है।",
+        search_results_crops: "मिलती-जुलती फसलें और बीमारियां",
+        search_results_market: "बाजार के ऑफर",
+        chat_header: "एग्रीवर्स एआई सहायक",
+        chat_welcome: "नमस्ते! मैं आपका एग्रीवर्स एआई कृषि सहायक हूं। मुझसे मौसम, फसल की बीमारियों या बाजार की कीमतों के बारे में पूछें।",
+        chat_placeholder: "मुझसे कोई प्रश्न पूछें...",
+        faq_title: "अक्सर पूछे जाने वाले प्रश्न",
+        contact_title: "एग्रीवर्स सहायता से संपर्क करें",
+        contact_name: "नाम",
+        contact_email: "ईमेल",
+        contact_msg: "संदेश",
+        contact_send: "संदेश भेजें",
+        contact_success: "धन्यवाद! हमारी सहायता टीम जल्द ही आपसे संपर्क करेगी।"
+      },
+      te: {
+        app_name: "అగ్రివర్స్",
+        tagline: "స్మార్ట్ ఫార్మింగ్ పర్యావరణ వ్యవస్థ",
+        nav_home: "హోమ్",
+        nav_dashboard: "డ్యాష్‌బోర్డ్",
+        nav_marketplace: "మార్కెట్ ప్లేస్",
+        nav_weather: "వాతావరణం",
+        nav_scanner: "లీఫ్ స్కానర్",
+        nav_learning: "లెర్నింగ్ సెంటర్",
+        nav_contact: "సంప్రదించండి",
+        nav_search: "సెర్చ్",
+        btn_login: "రైతు లాగిన్",
+        btn_logout: "లాగౌట్",
+        btn_signup: "సైన్ అప్",
+        loading: "లోడ్ అవుతోంది...",
+        theme_organic: "ఆర్గానిక్ & మట్టి రంగు",
+        theme_tech: "ఆధునిక & సాంకేతిక",
+        hero_title: "స్మార్ట్ అగ్‌టెక్‌తో రైతుల సాధికారత",
+        hero_subtitle: "వాతావరణాన్ని అంచనా వేయండి, తెగుళ్లను స్కాన్ చేయండి, పనులను నిర్వహించండి మరియు స్థానిక మార్కెట్లో వ్యాపారం చేయండి.",
+        quick_start: "శీఘ్ర చర్యలు",
+        action_scan: "ఆకును స్కాన్ చేయండి",
+        action_market: "మార్కెట్ సందర్శించండి",
+        action_weather: "వాతావరణ సమాచారం",
+        intro_title: "వ్యవసాయ భవిష్యత్తు",
+        intro_desc: "అగ్రివర్స్ సాంప్రదాయ వ్యవసాయంలోకి ఆధునిక సాంకేతికతను తెస్తుంది. మా పర్యావరణ వ్యవస్థ పర్యావరణ డేటా, కృత్రిమ మేధస్సు మరియు రైతు మార్కెట్‌ను అనుసంధానిస్తుంది.",
+        dash_title: "స్మార్ట్ ఫార్మ్ అనలిటిక్స్",
+        dash_soil: "నేల నాణ్యత పర్యవేక్షణ",
+        dash_soil_desc: "నేల pH: 6.5 (అత్యుత్తమం) | నైట్రోజన్: బాగుంది | భాస్వరం: మధ్యమం",
+        dash_irrigation: "నీటిపారుదల లాగ్‌లు",
+        dash_irrigation_desc: "చివరిగా నీరు పోసింది: 4 గంటల క్రితం. తదుపరి షెడ్యూల్: రేపు ఉదయం 6:00 గంటలకు.",
+        dash_prediction: "పంట అనుకూలత అంచనా",
+        dash_prediction_desc: "నేల & వాతావరణం ఆధారంగా, మీ నేల రాగులు మరియు టమోటాలకు 94% అనుకూలంగా ఉంది.",
+        dash_tasks: "వ్యవసాయ పనులు (చేయవలసిన పనుల జాబితా)",
+        task_placeholder: "పని పేరును నమోదు చేయండి...",
+        task_due: "గడువు తేదీ",
+        btn_add_task: "పనిని జోడించు",
+        no_tasks: "పెండింగ్ పనులు లేవు! ఈ రోజును ఆనందించండి.",
+        weather_title: "వాతావరణ కేంద్రం",
+        weather_humidity: "తేమ",
+        weather_rainfall: "వర్షపాతం",
+        weather_rain_predict: "వర్షం అంచనా",
+        weather_alerts: "ముఖ్యమైన హెచ్చరికలు",
+        weather_no_alerts: "మీ ప్రాంతంలో తీవ్రమైన వాతావరణ హెచ్చరికలు లేవు.",
+        weather_warning_rain: "రేపు భారీ వర్షం పడే అవకాశం ఉంది. ఎరువులు చల్లడం నివారించండి.",
+        market_title: "రైతు మార్కెట్",
+        market_subtitle: "వ్యవసాయ పనిముట్లు, విత్తనాలు, సేంద్రీయ ఎరువులు మరియు పంట ఉత్పత్తులను కొనండి మరియు అమ్మండి.",
+        market_filter_all: "అన్ని వర్గాలు",
+        market_filter_seeds: "విత్తనాలు",
+        market_filter_fert: "ఎరువులు",
+        market_filter_tools: "వ్యవసాయ పనిముట్లు",
+        market_filter_crops: "పంటలు",
+        market_price: "ధర",
+        market_seller: "అమ్మకందారుడు",
+        market_contact: "సంప్రదించండి",
+        market_sell_item: "మీ ఉత్పత్తిని జాబితా చేయండి",
+        market_prod_name: "ఉత్పత్తి పేరు",
+        market_category: "వర్గం",
+        market_desc: "వివరణ",
+        market_list_success: "ఉత్పత్తి విజయవంతంగా జాబితా చేయబడింది!",
+        scanner_title: "AI లీఫ్ తెగులు స్కానర్",
+        scanner_subtitle: "తెగుళ్లను గుర్తించడానికి ఆకు చిత్రాన్ని అప్‌లోడ్ చేయండి.",
+        scanner_drop: "అప్‌లోడ్ చేయడానికి క్లిక్ చేయండి లేదా ఆకు చిత్రాన్ని ఇక్కడికి లాగండి",
+        scanner_btn: "ఆకును విశ్లేషించండి",
+        scanner_result: "రోగనిర్ధారణ నివేదిక",
+        scanner_confidence: "AI ఖచ్చితత్వం",
+        scanner_remedy: "రసాయన నివారణ",
+        scanner_organic: "సేంద్రీయ చికిత్స",
+        search_title: "స్మార్ట్ వ్యవసాయ శోధన",
+        search_placeholder: "పంటల పేర్లు, పరికరాలు, ఎరువులు మాట్లాడండి లేదా టైప్ చేయండి...",
+        search_mic_listen: "వింటున్నాను... ఇప్పుడు మాట్లాడండి.",
+        search_mic_error: "ఈ బ్రౌజర్‌లో స్పీచ్ రికగ్నిషన్ సపోర్ట్ చేయదు.",
+        search_results_crops: "సరిపోలే పంటలు & తెగుళ్లు",
+        search_results_market: "మార్కెట్ ప్లేస్ ఆఫర్లు",
+        chat_header: "అగ్రివర్స్ AI సహాయకుడు",
+        chat_welcome: "నమస్కారం! నేను మీ అగ్రివర్స్ AI సహాయకుడిని. వాతావరణం, పంట తెగుళ్లు లేదా మార్కెట్ ధరల గురించి నన్ను అడగండి.",
+        chat_placeholder: "నన్ను ఒక ప్రశ్న అడగండి...",
+        faq_title: "తరచుగా అడిగే ప్రశ్నలు",
+        contact_title: "అగ్రివర్స్ మద్దతును సంప్రదించండి",
+        contact_name: "పేరు",
+        contact_email: "ఇమెయిల్",
+        contact_msg: "సందేశం",
+        contact_send: "సందేశాన్ని పంపండి",
+        contact_success: "ధన్యవాదాలు! మా సహాయక బృందం త్వరలో మిమ్మల్ని సంప్రదిస్తుంది."
+      },
+      ta: {
+        app_name: "அகிரிவெர்ஸ்",
+        tagline: "ஸ்மார்ட் விவசாய சுற்றுச்சூழல்",
+        nav_home: "முகப்பு",
+        nav_dashboard: "டாஷ்போர்டு",
+        nav_marketplace: "சந்தை",
+        nav_weather: "வானிலை",
+        nav_scanner: "இலை ஸ்கேனர்",
+        nav_learning: "கற்றல் மையம்",
+        nav_contact: "தொடர்பு",
+        nav_search: "தேடல்",
+        btn_login: "விவசாயி உள்நுழைவு",
+        btn_logout: "வெளியேறு",
+        btn_signup: "பதிவு செய்க",
+        loading: "ஏற்றப்படுகிறது...",
+        theme_organic: "இயற்கை & மண்வளம்",
+        theme_tech: "நவீன & தொழில்நுட்பம்",
+        hero_title: "ஸ்மார்ட் அக்-டெக் மூலம் விவசாயிகளை மேம்படுத்துதல்",
+        hero_subtitle: "வானிலை கணிப்பு, இலை நோய் கண்டறிதல், பணிகள் மேலாண்மை மற்றும் உள்ளூர் சந்தை வியாபாரம் - அனைத்தும் ஒரே தளத்தில்.",
+        quick_start: "விரைவு செயல்பாடுகள்",
+        action_scan: "இலை ஸ்கேன்",
+        action_market: "சந்தைக்குச் செல்",
+        action_weather: "வானிலை தகவல்",
+        intro_title: "பயிர்கள் மேலாண்மை",
+        intro_desc: "அகிரிவெர்ஸ் பாரம்பரிய விவசாயத்திற்கு நவீன தொழில்நுட்பத்தை வழங்குகிறது. பயிர் உற்பத்தியை அதிகரிக்க நேரடி வானிலை தரவுகள், AI கண்டறிதல் மற்றும் விவசாய சந்தை ஆகியவற்றை இணைக்கிறோம்.",
+        dash_title: "ஸ்மார்ட் பண்ணை பகுப்பாய்வு",
+        dash_soil: "மண் தரம் கண்காணிப்பு",
+        dash_soil_desc: "மண் pH: 6.5 (உகந்தது) | நைட்ரஜன்: நன்று | பாஸ்பரஸ்: நடுத்தரம்",
+        dash_irrigation: "நீர் மேலாண்மை",
+        dash_irrigation_desc: "கடைசியாக நீர் பாய்ச்சியது: 4 மணி நேரம் முன்பு. அடுத்த அட்டவணை: நாளை காலை 6:00 மணி.",
+        dash_prediction: "AI பயிர் பொருத்த கணிப்பு",
+        dash_prediction_desc: "மண் மற்றும் காலநிலை அடிப்படையில், உங்கள் மண் கேழ்வரகு மற்றும் தக்காளிக்கு 94% உகந்தது.",
+        dash_tasks: "பண்ணை பணிகள் (செய்ய வேண்டியவை)",
+        task_placeholder: "பணியின் பெயரை உள்ளிடவும்...",
+        task_due: "கடைசி தேதி",
+        btn_add_task: "பணியைச் சேர்",
+        no_tasks: "பெண்டிங் பணிகள் இல்லை! மகிழுங்கள்.",
+        weather_title: "வானிலை நிலையம்",
+        weather_humidity: "ஈரப்பதம்",
+        weather_rainfall: "மழைப்பொழிவு",
+        weather_rain_predict: "மழை கணிப்பு",
+        weather_alerts: "முக்கிய எச்சரிக்கைகள்",
+        weather_no_alerts: "உங்கள் பகுதியில் கடுமையான வானிலை எச்சரிக்கைகள் எதுவும் இல்லை.",
+        weather_warning_rain: "நாளை கனமழை பெய்யக்கூடும். உரங்கள் தெளிப்பதைத் தவிர்க்கவும்.",
+        market_title: "விவசாயிகள் சந்தை",
+        market_subtitle: "விவசாய கருவிகள், விதைகள், இயற்கை உரங்கள் மற்றும் புதிய பயிர்களை வாங்கவும் விற்கவும்.",
+        market_filter_all: "அனைத்து பிரிவுகள்",
+        market_filter_seeds: "விதைகள்",
+        market_filter_fert: "உரங்கள்",
+        market_filter_tools: "விவசாய கருவிகள்",
+        market_filter_crops: "பயிர்கள்",
+        market_price: "விலை",
+        market_seller: "விற்பனையாளர்",
+        market_contact: "தொடர்பு எண்",
+        market_sell_item: "பொருளை பட்டியலிடு",
+        market_prod_name: "தயாரிப்பு பெயர்",
+        market_category: "வகை",
+        market_desc: "விளக்கம்",
+        market_list_success: "தயாரிப்பு வெற்றிகரமாக பட்டியலிடப்பட்டது!",
+        scanner_title: "AI இலை நோய் ஸ்கேனர்",
+        scanner_subtitle: "இலை நோய்களைக் கண்டறிந்து, உடனடி இயற்கை மற்றும் வேதியியல் தீர்வுகளைப் பெற பயிர் இலையின் படத்தை பதிவேற்றவும்.",
+        scanner_drop: "பதிவேற்ற கிளிக் செய்யவும் அல்லது இலையின் படத்தை இங்கே இழுத்து விடவும்",
+        scanner_btn: "இலையை பகுப்பாய்வு செய்",
+        scanner_result: "கண்டறியும் அறிக்கை",
+        scanner_confidence: "AI துல்லியம்",
+        scanner_remedy: "வேதியியல் தீர்வு",
+        scanner_organic: "இயற்கை சிகிச்சை",
+        search_title: "ஸ்மார்ட் விவசாய தேடல்",
+        search_placeholder: "பயிர்கள், கருவிகள், உரங்கள் பற்றி பேசவும் அல்லது தட்டச்சு செய்யவும்...",
+        search_mic_listen: "கேட்கிறது... இப்போது பேசவும்.",
+        search_mic_error: "இந்த உலாவியில் குரல் அங்கீகாரம் ஆதரிக்கப்படவில்லை.",
+        search_results_crops: "பொருந்தும் பயிர்கள் & நோய்கள்",
+        search_results_market: "சந்தை சலுகைகள்",
+        chat_header: "அகிரிவெர்ஸ் AI உதவியாளர்",
+        chat_welcome: "வணக்கம்! நான் உங்கள் அகிரிவெர்ஸ் AI விவசாய உதவியாளர். வானிலை, இலை நோய்கள் அல்லது சந்தை விலைகள் பற்றி என்னிடம் கேட்கலாம்.",
+        chat_placeholder: "கேள்வி கேளுங்கள்...",
+        faq_title: "அடிக்கடி கேட்கப்படும் கேள்விகள்",
+        contact_title: "அகிரிவெர்ஸ் ஆதரவைத் தொடர்பு கொள்ளவும்",
+        contact_name: "பெயர்",
+        contact_email: "மின்னஞ்சல்",
+        contact_msg: "செய்தி",
+        contact_send: "செய்தி அனுப்பு",
+        contact_success: "நன்றி! எங்கள் ஆதரவு குழு விரைவில் உங்களை தொடர்பு கொள்ளும்."
+      },
+      kn: {
+        app_name: "ಅಗ್ರಿವರ್ಸ್",
+        tagline: "ಸ್ಮಾರ್ಟ್ ಕೃಷಿ ಪರಿಸರ ವ್ಯವಸ್ಥೆ",
+        nav_home: "ಮುಖಪುಟ",
+        nav_dashboard: "ಡ್ಯಾಶ್‌ಬೋರ್ಡ್",
+        nav_marketplace: "ಮಾರುಕಟ್ಟೆ",
+        nav_weather: "ಹವಾಮಾನ",
+        nav_scanner: "ಎಲೆ ಸ್ಕ್ಯಾನರ್",
+        nav_learning: "ಕಲಿಕಾ ಕೇಂದ್ರ",
+        nav_contact: "ಸಂಪರ್ಕಿಸಿ",
+        nav_search: "ಹುಡುಕಾಟ",
+        btn_login: "ರೈತರ ಲಾಗಿನ್",
+        btn_logout: "ಲಾಗ್ ಔಟ್",
+        btn_signup: "ನೋಂದಾಯಿಸಿ",
+        loading: "ಲೋಡ್ ಆಗುತ್ತಿದೆ...",
+        theme_organic: "ಸಾವಯವ ಮತ್ತು ಮಣ್ಣಿನ ಬಣ್ಣ",
+        theme_tech: "ನವೀನ ಮತ್ತು ತಾಂತ್ರಿಕ",
+        hero_title: "ಸ್ಮಾರ್ಟ್ ಅಗ್ಟೆಕ್ ಮೂಲಕ ರೈತರ ಸಬಲೀಕರಣ",
+        hero_subtitle: "ಹವಾಮಾನ ಮುನ್ಸೂಚನೆ, ಎಲೆ ರೋಗ ಪತ್ತೆ ಹಚ್ಚಿ, ಕೆಲಸಗಳನ್ನು ನಿರ್ವಹಿಸಿ ಮತ್ತು ಸ್ಥಳೀಯ ಮಾರುಕಟ್ಟೆಯಲ್ಲಿ ವ್ಯಾಪಾರ ಮಾಡಿ.",
+        quick_start: "ಶೀಘ್ರ ಕ್ರಿಯೆಗಳು",
+        action_scan: "ಎಲೆ ಸ್ಕ್ಯಾನ್",
+        action_market: "ಮಾರುಕಟ್ಟೆಗೆ ಭೇಟಿ ಕೊಡಿ",
+        action_weather: "ಹವಾಮಾನ ಮಾಹಿತಿ",
+        intro_title: "ಭವಿಷ್ಯದ ಕೃಷಿ",
+        intro_desc: "ಅಗ್ರಿವರ್ಸ್ ಸಾಂಪ್ರದಾಯಿಕ ಕೃಷಿಗೆ ಆಧುನಿಕ ತಂತ್ರಜ್ಞಾನವನ್ನು ತರುತ್ತದೆ. ಬೆಳೆ ಇಳುವರಿಯನ್ನು ಹೆಚ್ಚಿಸಲು ನಾವು ಹವಾಮಾನ ಡೇಟಾ ಮತ್ತು ಕೃಷಿ ಮಾರುಕಟ್ಟೆಯನ್ನು ಸಂಯೋಜಿಸುತ್ತೇವೆ.",
+        dash_title: "ಸ್ಮಾರ್ಟ್ ಕೃಷಿ ವಿಶ್ಲೇಷಣೆ",
+        dash_soil: "ಮಣ್ಣಿನ ಗುಣಮಟ್ಟ ಮೇಲ್ವಿಚಾರಣೆ",
+        dash_soil_desc: "ಮಣ್ಣಿನ pH: 6.5 (ಉತ್ತಮ) | ಸಾರಜನಕ: ಚೆನ್ನಾಗಿದೆ | ರಂಜಕ: ಮಧ್ಯಮ",
+        dash_irrigation: "ನೀರಾವರಿ ದಾಖಲೆಗಳು",
+        dash_irrigation_desc: "ಕೊನೆಯದಾಗಿ ನೀರುಣಿಸಿದ್ದು: 4 ಗಂಟೆಗಳ ಹಿಂದೆ. ಮುಂದಿನ ವೇಳಾಪಟ್ಟಿ: ನಾಳೆ ಬೆಳಿಗ್ಗೆ 6:00.",
+        dash_prediction: "AI ಬೆಳೆ ಹೊಂದಾಣಿಕೆ ಮುನ್ಸೂಚನೆ",
+        dash_prediction_desc: "ಮಣ್ಣು ಮತ್ತು ಹವಾಮಾನದ ಆಧಾರದ ಮೇಲೆ, ನಿಮ್ಮ ಮಣ್ಣು ರಾಗಿ ಮತ್ತು ಟೊಮೆಟೊಗೆ 94% ಸೂಕ್ತವಾಗಿದೆ.",
+        dash_tasks: "ಕೃಷಿ ಕೆಲಸಗಳು (ಮಾಡಬೇಕಾದ ಪಟ್ಟಿ)",
+        task_placeholder: "ಕೆಲಸದ ಹೆಸರನ್ನು ನಮೂದಿಸಿ...",
+        task_due: "ಕೊನೆಯ ದಿನಾಂಕ",
+        btn_add_task: "ಕೆಲಸವನ್ನು ಸೇರಿಸಿ",
+        no_tasks: "ಯಾವುದೇ ಕೆಲಸ ಬಾಕಿ ಇಲ್ಲ! ದಿನವನ್ನು ಆನಂದಿಸಿ.",
+        weather_title: "ಹವಾಮಾನ ಕೇಂದ್ರ",
+        weather_humidity: "ಆರ್ದ್ರತೆ",
+        weather_rainfall: "ಮಳೆ ಪ್ರಮಾಣ",
+        weather_rain_predict: "ಮಳೆ ಮುನ್ಸೂಚನೆ",
+        weather_alerts: "ಪ್ರಮುಖ ಎಚ್ಚರಿಕೆಗಳು",
+        weather_no_alerts: "ನಿಮ್ಮ ಪ್ರದೇಶದಲ್ಲಿ ಯಾವುದೇ ಹವಾಮಾನ ಮುನ್ಸೂಚನೆ ಎಚ್ಚರಿಕೆಗಳಿಲ್ಲ.",
+        weather_warning_rain: "ನಾಳೆ ಭಾರಿ ಮಳೆಯಾಗುವ ಸಾಧ್ಯತೆಯಿದೆ. ರಸಗೊಬ್ಬರ ಸಿಂಪಡಿಸಬೇಡಿ.",
+        market_title: "ರೈತರ ಮಾರುಕಟ್ಟೆ",
+        market_subtitle: "ಕೃಷಿ ಉಪಕರಣಗಳು, ಬೀಜಗಳು, ಸಾವಯವ ಗೊಬ್ಬರಗಳು ಮತ್ತು ತಾಜಾ ಬೆಳೆಗಳನ್ನು ಖರೀದಿಸಿ ಮತ್ತು ಮಾರಾಟ ಮಾಡಿ.",
+        market_filter_all: "ಎಲ್ಲಾ ವಿಭಾಗಗಳು",
+        market_filter_seeds: "ಬೀಜಗಳು",
+        market_filter_fert: "ಗೊಬ್ಬರಗಳು",
+        market_filter_tools: "ಕೃಷಿ ಉಪಕರಣಗಳು",
+        market_filter_crops: "ಬೆಳೆಗಳು",
+        market_price: "ಬೆಲೆ",
+        market_seller: "ಮಾರಾಟಗಾರರು",
+        market_contact: "ಸಂಪರ್ಕಿಸಿ",
+        market_sell_item: "ಉತ್ಪನ್ನವನ್ನು ಪಟ್ಟಿ ಮಾಡಿ",
+        market_prod_name: "ಉತ್ಪನ್ನದ ಹೆಸರು",
+        market_category: "ವರ್ಗ",
+        market_desc: "ವಿವರಣೆ",
+        market_list_success: "ಉತ್ಪನ್ನವನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಪಟ್ಟಿ ಮಾಡಲಾಗಿದೆ!",
+        scanner_title: "AI ಎಲೆ ರೋಗ ಸ್ಕ್ಯಾನರ್",
+        scanner_subtitle: "ಎಲೆ ರೋಗಗಳನ್ನು ಪತ್ತೆಹಚ್ಚಲು ಮತ್ತು ಸಾವಯವ ಪರಿಹಾರಗಳನ್ನು ಪಡೆಯಲು ಎಲೆಯ ಚಿತ್ರವನ್ನು ಅಪ್‌ಲೋಡ್ ಮಾಡಿ.",
+        scanner_drop: "ಅಪ್‌ಲೋಡ್ ಮಾಡಲು ಕ್ಲಿಕ್ ಮಾಡಿ ಅಥವಾ ಎಲೆಯ ಚಿತ್ರವನ್ನು ಇಲ್ಲಿಗೆ ಎಳೆಯಿರಿ",
+        scanner_btn: "ಎಲೆಯನ್ನು ವಿಶ್ಲೇಷಿಸಿ",
+        scanner_result: "ರೋಗನಿರ್ಣಯ ವರದಿ",
+        scanner_confidence: "AI ಖಚಿತತೆ",
+        scanner_remedy: "ರಾಸಾಯನಿಕ ಪರಿಹಾರ",
+        scanner_organic: "ಸಾವಯವ ಚಿಕಿತ್ಸೆ",
+        search_title: "ಸ್ಮಾರ್ಟ್ ಕೃಷಿ ಹುಡುಕಾಟ",
+        search_placeholder: "ಬೆಳೆಗಳು, ಉಪಕರಣಗಳು ಅಥವಾ ಗೊಬ್ಬರಗಳ ಹೆಸರನ್ನು ಹೇಳಿ ಅಥವಾ ಬರೆಯಿರಿ...",
+        search_mic_listen: "ಕೇಳಿಸಿಕೊಳ್ಳುತ್ತಿದೆ... ಈಗ ಮಾತನಾಡಿ.",
+        search_mic_error: "ಈ ಬ್ರೌಸರ್‌ನಲ್ಲಿ ಧ್ವನಿ ಗುರುತಿಸುವಿಕೆ ಬೆಂಬಲಿಸುವುದಿಲ್ಲ.",
+        search_results_crops: "ಹೊಂದುವ ಬೆಳೆಗಳು ಮತ್ತು ರೋಗಗಳು",
+        search_results_market: "ಮಾರುಕಟ್ಟೆ ಕೊಡುಗೆಗಳು",
+        chat_header: "ಅಗ್ರಿವರ್ಸ್ AI ಸಹಾಯಕಿ",
+        chat_welcome: "ನಮಸ್ಕಾರ! ನಾನು ನಿಮ್ಮ ಅಗ್ರಿವರ್ಸ್ ಕೃಷಿ ಸಹಾಯಕಿ. ಹವಾಮಾನ, ಎಲೆ ರೋಗಗಳು ಅಥವಾ ಮಾರುಕಟ್ಟೆ ಬೆಲೆಗಳ ಬಗ್ಗೆ ಕೇಳಿ.",
+        chat_placeholder: "ನನಗೊಂದು ಪ್ರಶ್ನೆ ಕೇಳಿ...",
+        faq_title: "ಪದೇ ಪದೇ ಕೇಳಲಾಗುವ ಪ್ರಶ್ನೆಗಳು",
+        contact_title: "ಅಗ್ರಿವರ್ಸ್ ಬೆಂಬಲವನ್ನು ಸಂಪರ್ಕಿಸಿ",
+        contact_name: "ಹೆಸರು",
+        contact_email: "ಇಮೇಲ್",
+        contact_msg: "ಸಂದೇಶ",
+        contact_send: "ಸಂದೇಶ ಕಳುಹಿಸಿ",
+        contact_success: "ಧನ್ಯವಾದಗಳು! ನಮ್ಮ ತಂಡ ಶೀಘ್ರದಲ್ಲೇ ಸಂಪರ್ಕಿಸುತ್ತದೆ."
+      },
+      mr: {
+        app_name: "एग्रीव्हर्स",
+        tagline: "स्मार्ट शेती परिसंस्था",
+        nav_home: "मुख्यपृष्ठ",
+        nav_dashboard: "डॅशबोर्ड",
+        nav_marketplace: "बाजारपेठ",
+        nav_weather: "हवामान",
+        nav_scanner: "पान स्कॅनर",
+        nav_learning: "शिक्षण केंद्र",
+        nav_contact: "संपर्क साधा",
+        nav_search: "शोध",
+        btn_login: "शेतकरी लॉगिन",
+        btn_logout: "लॉगआउट",
+        btn_signup: "नोंदणी करा",
+        loading: "लोड होत आहे...",
+        theme_organic: "सेंद्रिय आणि माती रंग",
+        theme_tech: "आधुनिक आणि तांत्रिक",
+        hero_title: "स्मार्ट एगटेक द्वारे शेतकऱ्यांचे सक्षमीकरण",
+        hero_subtitle: "हवामानाचा अंदाज घ्या, पिकांचे आजार स्कॅन करा, कामे व्यवस्थापित करा आणि बाजारात थेट व्यापार करा.",
+        quick_start: "त्वरित कृती",
+        action_scan: "पान स्कॅन",
+        action_market: "बाजाराला भेट द्या",
+        action_weather: "हवामान माहिती",
+        intro_title: "भविष्यातील शेती",
+        intro_desc: "एग्रीव्हर्स पारंपारिक शेतीमध्ये आधुनिक तंत्रज्ञान आणते. पीक उत्पादकता सुधारण्यासाठी आम्ही हवामान डेटा आणि शेतकरी बाजार एकत्रित करतो.",
+        dash_title: "स्मार्ट शेती विश्लेषण",
+        dash_soil: "माती गुणवत्ता नियंत्रण",
+        dash_soil_desc: "माती पीएच: ६.५ (उत्कृष्ट) | नायट्रोजन: चांगले | फॉस्फरस: मध्यम",
+        dash_irrigation: "सिंचन नोंदी",
+        dash_irrigation_desc: "शेवटचे पाणी दिले: ४ तासांपूर्वी. पुढील नियोजन: उद्या सकाळी ६:०० वाजता.",
+        dash_prediction: "AI पीक अनुकूलता अंदाज",
+        dash_prediction_desc: "माती आणि हवामानानुसार, तुमची जमीन रागी आणि टोमॅटोसाठी ९४% योग्य आहे.",
+        dash_tasks: "शेतीची कामे (कार्य सूची)",
+        task_placeholder: "कामाचे नाव टाका...",
+        task_due: "नियत तारीख",
+        btn_add_task: "काम जोडा",
+        no_tasks: "काहीही काम प्रलंबित नाही! आनंदी राहा.",
+        weather_title: "हवामान केंद्र",
+        weather_humidity: "आर्द्रता",
+        weather_rainfall: "पाऊस",
+        weather_rain_predict: "पावसाचा अंदाज",
+        weather_alerts: "महत्त्वाच्या सूचना",
+        weather_no_alerts: "तुमच्या भागात हवामानाची कोणतीही गंभीर चेतावणी नाही.",
+        weather_warning_rain: "उद्या मुसळधार पावसाची शक्यता आहे. खतांची फवारणी टाळा.",
+        market_title: "शेतकरी बाजार",
+        market_subtitle: "शेतीची अवजारे, बियाणे, सेंद्रिय खते आणि ताजी पिके खरेदी करा व विक्री करा.",
+        market_filter_all: "सर्व प्रकार",
+        market_filter_seeds: "बियाणे",
+        market_filter_fert: "खते",
+        market_filter_tools: "शेतीची अवजारे",
+        market_filter_crops: "पिके",
+        market_price: "किंमत",
+        market_seller: "विक्रेता",
+        market_contact: "संपर्क",
+        market_sell_item: "उत्पादनाची नोंद करा",
+        market_prod_name: "उत्पादनाचे नाव",
+        market_category: "वर्ग",
+        market_desc: "वर्णन",
+        market_list_success: "उत्पादन यशस्वीरित्या नोंदवले गेले!",
+        scanner_title: "AI पान रोग स्कॅनर",
+        scanner_subtitle: "पानावरील रोगांचे निदान करण्यासाठी आणि सेंद्रिय उपाय मिळवण्यासाठी पानाचा फोटो अपलोड करा.",
+        scanner_drop: "अपलोड करण्यासाठी क्लिक करा किंवा पानाचा फोटो येथे खेचा",
+        scanner_btn: "पानाचे विश्लेषण करा",
+        scanner_result: "निदान अहवाल",
+        scanner_confidence: "AI अचूकता",
+        scanner_remedy: "रासायनिक उपाय",
+        scanner_organic: "सेंद्रिय उपाय",
+        search_title: "स्मार्ट शेती शोध",
+        search_placeholder: "पिके किंवा खतांचे नाव बोला अथवा टाईप करा...",
+        search_mic_listen: "ऐकत आहे... आता बोला.",
+        search_mic_error: "या ब्राउझरमध्ये आवाज ओळखणे समर्थित नाही.",
+        search_results_crops: "जुळणारी पिके आणि रोग",
+        search_results_market: "बाजारपेठ ऑफर्स",
+        chat_header: "एग्रीव्हर्स AI मदतनीस",
+        chat_welcome: "नमस्कार! मी आपला एग्रीव्हर्स AI शेती मदतनीस आहे. मला हवामान, पानांचे रोग किंवा बाजारातील किमतींबद्दल विचारा.",
+        chat_placeholder: "मला प्रश्न विचारा...",
+        faq_title: "वारंवार विचारले जाणारे प्रश्न",
+        contact_title: "एग्रीव्हर्स सपोर्टशी संपर्क साधा",
+        contact_name: "नाव",
+        contact_email: "ईमेल",
+        contact_msg: "संदेश",
+        contact_send: "संदेश पाठवा",
+        contact_success: "धन्यवाद! आमची मदत चमू लवकरच तुमच्याशी संपर्क साधेल."
+      },
+      bn: {
+        app_name: "এগ্রিভার্স",
+        tagline: "স্মার্ট কৃষি ইকোসিস্টেম",
+        nav_home: "মূল পাতা",
+        nav_dashboard: "ড্যাশবোর্ড",
+        nav_marketplace: "বাজার",
+        nav_weather: "আবহাওয়া",
+        nav_scanner: "পাতা স্ক্যানার",
+        nav_learning: "শিক্ষা কেন্দ্র",
+        nav_contact: "যোগাযোগ",
+        nav_search: "অনুসন্ধান",
+        btn_login: "কৃষক লগইন",
+        btn_logout: "লগআউট",
+        btn_signup: "নিবন্ধন করুন",
+        loading: "লোড হচ্ছে...",
+        theme_organic: "জৈব এবং মাটির রঙ",
+        theme_tech: "আধুনিক এবং প্রযুক্তিগত",
+        hero_title: "স্মার্ট এগ্রিটেক দিয়ে কৃষকদের ক্ষমতায়ন",
+        hero_subtitle: "আবহাওয়ার পূর্বাভাস জানুন, পাতার রোগ স্ক্যান করুন, কাজ পরিচালনা করুন এবং কেনাবেচা করুন।",
+        quick_start: "দ্রুত লিংক",
+        action_scan: "পাতা স্ক্যান",
+        action_market: "বাজার পরিদর্শন",
+        action_weather: "আবহাওয়ার তথ্য",
+        intro_title: "ভবিষ্যতের কৃষি",
+        intro_desc: "এগ্রিভার্স প্রথাগত কৃষিতে আধুনিক প্রযুক্তি নিয়ে আসে। ফলন বাড়াতে আমরা আবহাওয়া ডেটা এবং উন্মুক্ত বাজারকে সংযুক্ত করি।",
+        dash_title: "স্মার্ট কৃষি বিশ্লেষণ",
+        dash_soil: "মাটি পরীক্ষা ও পর্যবেক্ষণ",
+        dash_soil_desc: "মাটির pH: ৬.৫ (সেরা) | নাইট্রোজেন: ভালো | ফসফরাস: মাঝারি",
+        dash_irrigation: "সেচের বিবরণ",
+        dash_irrigation_desc: "সর্বশেষ সেচ: ৪ ঘণ্টা আগে। পরবর্তী সময়সূচী: আগামীকাল সকাল ৬:০০ টা।",
+        dash_prediction: "AI ফসল উপযুক্ততা পূর্বাভাস",
+        dash_prediction_desc: "মাটি এবং জলবায়ুর ওপর ভিত্তি করে, আপনার জমি রাগী এবং টমেটোর জন্য ৯৪% উপযুক্ত।",
+        dash_tasks: "খামারের কাজ (করণীয় তালিকা)",
+        task_placeholder: "কাজের নাম লিখুন...",
+        task_due: "নির্দিষ্ট তারিখ",
+        btn_add_task: "কাজ যোগ করুন",
+        no_tasks: "কোনো কাজ পেন্ডিং নেই! দিনটি উপভোগ করুন।",
+        weather_title: "আবহাওয়া স্টেশন",
+        weather_humidity: "আর্দ্রতা",
+        weather_rainfall: "বৃষ্টিপাত",
+        weather_rain_predict: "বৃষ্টির পূর্বাভাস",
+        weather_alerts: "জরুরী সতর্কবার্তা",
+        weather_no_alerts: "আপনার অঞ্চলে কোনো সতর্কবার্তা নেই।",
+        weather_warning_rain: "আগামীকাল ভারী বৃষ্টির সম্ভাবনা আছে। সার ছিটানো এড়িয়ে চলুন।",
+        market_title: "কৃষকদের বাজার",
+        market_subtitle: "কৃষি সরঞ্জাম, বীজ, জৈব সার এবং তাজা ফসল কেনাবেচা করুন।",
+        market_filter_all: "সব বিভাগ",
+        market_filter_seeds: "বীজ",
+        market_filter_fert: "সার",
+        market_filter_tools: "কৃষি সরঞ্জাম",
+        market_filter_crops: "ফসল",
+        market_price: "মূল্য",
+        market_seller: "বিক্রেতা",
+        market_contact: "যোগাযোগ নম্বর",
+        market_sell_item: "পণ্য তালিকাভুক্ত করুন",
+        market_prod_name: "পণ্যের নাম",
+        market_category: "বিভাগ",
+        market_desc: "বিবরণ",
+        market_list_success: "পণ্যটি সফলভাবে তালিকাভুক্ত করা হয়েছে!",
+        scanner_title: "AI পাতা রোগ স্ক্যানার",
+        scanner_subtitle: "পাতার রোগ শনাক্ত করতে এবং জৈব প্রতিকার জানতে পাতার ছবি আপলোড করুন।",
+        scanner_drop: "আপলোড করতে ক্লিক করুন বা পাতার ছবিটি এখানে টেনে আনুন",
+        scanner_btn: "পাতা বিশ্লেষণ করুন",
+        scanner_result: "বিশ্লেষণ রিপোর্ট",
+        scanner_confidence: "AI নির্ভুলতা",
+        scanner_remedy: "রাসায়নিক প্রতিকার",
+        scanner_organic: "জৈব প্রতিকার",
+        search_title: "স্মার্ট কৃষি অনুসন্ধান",
+        search_placeholder: "ফসলের নাম বা সরঞ্জামের কথা বলুন বা টাইপ করুন...",
+        search_mic_listen: "শুনছি... এখন বলুন।",
+        search_mic_error: "এই ব্রাউজারে ভয়েস অনুসন্ধান সমর্থন করে না।",
+        search_results_crops: "সংশ্লিষ্ট ফসল ও রোগ",
+        search_results_market: "বাজারের অফার",
+        chat_header: "এগ্রিভার্স AI সহকারী",
+        chat_welcome: "নমস্কার! আমি এগ্রিভার্স AI কৃষি সহকারী। আবহাওয়া বা পাতার রোগ সম্পর্কে জিজ্ঞেস করুন।",
+        chat_placeholder: "আমাকে প্রশ্ন করুন...",
+        faq_title: "সাধারণ জিজ্ঞাসা",
+        contact_title: "এগ্রিভার্স সহায়তার সাথে যোগাযোগ করুন",
+        contact_name: "নাম",
+        contact_email: "ইমেইল",
+        contact_msg: "বার্তা",
+        contact_send: "বার্তা পাঠান",
+        contact_success: "ধন্যবাদ! আমাদের সহায়তা দল শীঘ্রই আপনার সাথে যোগাযোগ করবে।"
+      }
+    };
+
+    // --- API HELPER OBJECT ---
+    const API = {
+      baseUrl: window.location.origin.startsWith('file') ? 'http://localhost:8000' : window.location.origin,
+      
+      async getDashboard(userId) {
+        return axios.get(`${this.baseUrl}/api/dashboard/${userId}`);
+      },
+      async getTasks(userId) {
+        return axios.get(`${this.baseUrl}/api/tasks/${userId}`);
+      },
+      async createTask(userId, taskName, dueDate) {
+        return axios.post(`${this.baseUrl}/api/tasks/${userId}`, { task_name: taskName, due_date: dueDate });
+      },
+      async updateTask(taskId, completedStatus) {
+        return axios.put(`${this.baseUrl}/api/tasks/${taskId}`, { completed_status: completedStatus });
+      },
+      async deleteTask(taskId) {
+        return axios.delete(`${this.baseUrl}/api/tasks/${taskId}`);
+      },
+      async getWeather(city) {
+        return axios.get(`${this.baseUrl}/api/weather/${city}`);
+      },
+      async getMarketplace(search = '', category = '') {
+        return axios.get(`${this.baseUrl}/api/marketplace`, { params: { search, category } });
+      },
+      async createProduct(productData) {
+        return axios.post(`${this.baseUrl}/api/marketplace`, productData);
+      },
+      async uploadLeaf(file) {
+        const fd = new FormData();
+        fd.append('file', file);
+        return axios.post(`${this.baseUrl}/api/scanner/upload`, fd, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+      },
+      async globalSearch(query) {
+        return axios.get(`${this.baseUrl}/api/search`, { params: { query } });
+      },
+      async login(email, password) {
+        return axios.post(`${this.baseUrl}/api/auth/login`, { email, password });
+      },
+      async register(name, email, location, language, password) {
+        return axios.post(`${this.baseUrl}/api/auth/register`, {
+          farmer_name: name, email, location, language, password
+        });
+      }
+    };
+
+    // --- SHARED UI SUB-COMPONENTS ---
+    function DashboardCard({ title, value, description, icon, colorClass = "bg-primary/5 text-primary" }) {
+      return (
+        <div className="p-6 bg-white border border-primary/10 rounded-3xl shadow-sm hover:shadow-lg transition-all duration-300">
+          <div className="flex items-center justify-between">
+            <div>
+              <span className="text-xs font-bold text-primary/60 uppercase tracking-wider block">{title}</span>
+              <span className="text-2xl font-extrabold text-primary block mt-1.5">{value}</span>
+            </div>
+            <div className={`p-3.5 rounded-2xl ${colorClass}`}>
+              <i data-lucide={icon} className="w-6 h-6"></i>
+            </div>
+          </div>
+          {description && (
+            <p className="text-xs font-medium text-primary/70 mt-4 leading-relaxed bg-background/50 p-2.5 rounded-xl border border-primary/5">
+              {description}
+            </p>
+          )}
+        </div>
+      );
+    }
+
+    function CropCard({ crop }) {
+      return (
+        <div className="flex flex-col bg-white border border-primary/10 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+          {crop.image_url && (
+            <div className="relative h-44 overflow-hidden">
+              <img src={crop.image_url} alt={crop.crop_name} className="w-full h-full object-cover" />
+              <span className="absolute top-3 right-3 px-3 py-1 text-xs font-bold text-white bg-primary/80 backdrop-blur-md rounded-full">
+                {crop.season}
+              </span>
+            </div>
+          )}
+          <div className="flex-1 p-5 flex flex-col justify-between">
+            <div>
+              <h3 className="font-bold text-lg text-primary">{crop.crop_name}</h3>
+              {crop.description && <p className="text-xs text-primary/70 mt-1.5 leading-relaxed">{crop.description}</p>}
+            </div>
+            <div className="mt-4 pt-4 border-t border-primary/5 space-y-2 text-xs">
+              <div className="flex items-center gap-2 text-primary/85">
+                <i data-lucide="droplet" className="w-3.5 h-3.5 text-primary-light"></i>
+                <span className="font-semibold">Fertilizer:</span>
+                <span className="truncate">{crop.fertilizer}</span>
+              </div>
+              <div className="flex items-center gap-2 text-accent-dark">
+                <i data-lucide="shield-alert" className="w-3.5 h-3.5"></i>
+                <span className="font-semibold text-primary/80">Key Threat:</span>
+                <span className="font-semibold">{crop.disease}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    function ProductCard({ product, t }) {
+      return (
+        <div className="flex flex-col bg-white border border-primary/10 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+          {product.image_url && (
+            <div className="relative h-40 overflow-hidden bg-background">
+              <img src={product.image_url} alt={product.product_name} className="w-full h-full object-cover" />
+              <span className="absolute top-3 right-3 px-2.5 py-1 text-[11px] font-bold text-white bg-primary-light rounded-lg">
+                {product.category}
+              </span>
+            </div>
+          )}
+          <div className="flex-1 p-5 flex flex-col justify-between">
+            <div>
+              <div className="flex items-start justify-between gap-2">
+                <h3 className="font-bold text-base text-primary leading-snug">{product.product_name}</h3>
+                <span className="text-lg font-extrabold text-primary shrink-0">₹{product.price}</span>
+              </div>
+              {product.description && <p className="text-xs text-primary/70 mt-2 line-clamp-2 leading-relaxed">{product.description}</p>}
+            </div>
+            <div className="mt-4 pt-4 border-t border-primary/5 space-y-2 text-xs text-primary/80">
+              <div className="flex items-center gap-2">
+                <i data-lucide="user" className="w-3.5 h-3.5 text-primary-light"></i>
+                <span>{t('market_seller')}: <strong>{product.seller}</strong></span>
+              </div>
+              {product.contact && (
+                <div className="flex items-center gap-2">
+                  <i data-lucide="phone" className="w-3.5 h-3.5 text-primary-light"></i>
+                  <span>{t('market_contact')}: <strong>{product.contact}</strong></span>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // --- MAIN COMPONENT ---
+    function App() {
+      const [lang, setLang] = useState(localStorage.getItem('agriverse-lang') || 'en');
+      const [theme, setTheme] = useState(localStorage.getItem('agriverse-theme') || 'organic');
+      const [currentPage, setCurrentPage] = useState('home');
+      const [currentUser, setCurrentUser] = useState(null);
+      const [sidebarOpen, setSidebarOpen] = useState(false);
+      const [globalSearchVal, setGlobalSearchVal] = useState('');
+      const [globalMicListening, setGlobalMicListening] = useState(false);
+
+      // Chatbot states
+      const [chatOpen, setChatOpen] = useState(false);
+      const [chatMessages, setChatMessages] = useState([
+        { id: 1, text: translations[lang].chat_welcome, sender: 'bot' }
+      ]);
+      const [chatInput, setChatInput] = useState('');
+      const [chatTyping, setChatTyping] = useState(false);
+
+      // Translation helper
+      const t = (key) => translations[lang]?.[key] || translations['en']?.[key] || key;
+
+      // Persist Theme and Lang
+      useEffect(() => {
+        localStorage.setItem('agriverse-theme', theme);
+        if (theme === 'tech') {
+          document.body.classList.add('theme-tech');
+        } else {
+          document.body.classList.remove('theme-tech');
+        }
+      }, [theme]);
+
+      useEffect(() => {
+        localStorage.setItem('agriverse-lang', lang);
+      }, [lang]);
+
+      useEffect(() => {
+        const saved = localStorage.getItem('agriverse-user');
+        if (saved) setCurrentUser(JSON.parse(saved));
+      }, []);
+
+      // Trigger Lucide icons rendering
+      useEffect(() => {
+        if (window.lucide) {
+          window.lucide.createIcons();
+        }
+      }, [currentPage, sidebarOpen, chatOpen, chatTyping]);
+
+      const handleLoginSuccess = (user) => {
+        setCurrentUser(user);
+        localStorage.setItem('agriverse-user', JSON.stringify(user));
+        setCurrentPage('dashboard');
+      };
+
+      const handleLogout = () => {
+        setCurrentUser(null);
+        localStorage.removeItem('agriverse-user');
+        setCurrentPage('home');
+      };
+
+      const handleChatSubmit = (e) => {
+        e.preventDefault();
+        if (!chatInput.trim()) return;
+
+        const userMsg = { id: Date.now(), text: chatInput, sender: 'user' };
+        setChatMessages(prev => [...prev, userMsg]);
+        const query = chatInput.toLowerCase();
+        setChatInput('');
+        setChatTyping(true);
+
+        setTimeout(() => {
+          let reply = "";
+          if (query.includes('weather') || query.includes('rain')) {
+            reply = "Weather report predicts clear skies for Bangalore and rain forecasts for Mumbai. Access the Weather tab to consult maps.";
+          } else if (query.includes('blight') || query.includes('leaf') || query.includes('disease')) {
+            reply = "Identify spots or discoloration instantly by uploading to the Leaf Scanner tab. Presets are available for testing!";
+          } else if (query.includes('price') || query.includes('market') || query.includes('sell')) {
+            reply = "Direct listing and transactions are open in the Marketplace. Organic NPK rates sit near ₹800.";
+          } else {
+            reply = `That is an interesting question. Please explore our Learning Center guides or search for "${query}" inside our global search tool.`;
+          }
+
+          setChatMessages(prev => [...prev, { id: Date.now() + 1, text: reply, sender: 'bot' }]);
+          setChatTyping(false);
+        }, 1000);
+      };
+
+      const handleGlobalMic = () => {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+          alert("Speech recognition not supported in this browser.");
+          return;
+        }
+        const recognition = new SpeechRecognition();
+        recognition.lang = 'en-IN';
+        recognition.onstart = () => setGlobalMicListening(true);
+        recognition.onresult = (e) => {
+          const txt = e.results[0][0].transcript;
+          setGlobalSearchVal(txt);
+          setCurrentPage('search');
+        };
+        recognition.onend = () => setGlobalMicListening(false);
+        recognition.start();
+      };
+
+      return (
+        <div className="min-h-screen flex flex-col">
+          {/* NAVBAR */}
+          <nav className="sticky top-0 z-50 flex items-center justify-between px-6 py-4 bg-white/80 backdrop-blur-md border-b border-primary/10 shadow-sm">
+            <div className="flex items-center gap-3">
+              <button 
+                onClick={() => setSidebarOpen(prev => !prev)}
+                className="p-2 mr-1 rounded-lg hover:bg-primary/5 lg:hidden text-primary"
+              >
+                <i data-lucide="menu" className="w-6 h-6"></i>
+              </button>
+              <div onClick={() => setCurrentPage('home')} className="flex items-center gap-2 cursor-pointer">
+                {/* Custom Logo Image Uploaded by User */}
+                <img src="/static/logo.png" alt="AgriVerse Logo" className="w-10 h-10 object-contain rounded-xl shadow-sm" onError={(e) => { e.target.style.display = 'none'; }} />
+                <div>
+                  <span className="text-xl font-bold tracking-tight text-primary block leading-none">{t('app_name')}</span>
+                  <span className="text-xs text-primary-light font-medium">{t('tagline')}</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-4">
+              <div className="relative flex items-center gap-1 text-primary">
+                <i data-lucide="globe" className="w-4 h-4 opacity-70"></i>
+                <select 
+                  value={lang} 
+                  onChange={(e) => setLang(e.target.value)}
+                  className="bg-transparent font-medium border-none focus:ring-0 cursor-pointer text-sm pr-4"
+                >
+                  <option value="en">English</option>
+                  <option value="hi">हिन्दी</option>
+                  <option value="te">తెలుగు</option>
+                  <option value="ta">தமிழ் (Tamil)</option>
+                  <option value="kn">ಕನ್ನಡ (Kannada)</option>
+                  <option value="mr">मराठी (Marathi)</option>
+                  <option value="bn">বাংলা (Bengali)</option>
+                </select>
+              </div>
+
+              {/* Global Mic Search Button */}
+              <button 
+                onClick={handleGlobalMic}
+                className={`p-2.5 rounded-xl hover:scale-105 transition-transform ${globalMicListening ? 'bg-red-500 text-white animate-pulse' : 'hover:bg-primary/5 text-primary'}`}
+                title="Global Voice Command"
+              >
+                <i data-lucide="mic" className="w-5 h-5"></i>
+              </button>
+
+              <button 
+                onClick={() => setTheme(prev => prev === 'organic' ? 'tech' : 'organic')}
+                className="p-2.5 rounded-xl hover:bg-primary/5 text-primary"
+              >
+                <i data-lucide={theme === 'organic' ? "moon" : "sun"} className="w-5 h-5"></i>
+              </button>
+
+              {currentUser ? (
+                <div className="flex items-center gap-3 border-l border-primary/15 pl-4">
+                  <div className="hidden sm:block text-right">
+                    <span className="text-xs text-primary-light block font-semibold">Farmer</span>
+                    <span className="text-sm font-bold text-primary">{currentUser.farmer_name}</span>
+                  </div>
+                  <button 
+                    onClick={handleLogout}
+                    className="p-2.5 rounded-xl text-accent-dark hover:bg-accent-dark/5"
+                    title={t('btn_logout')}
+                  >
+                    <i data-lucide="log-out" className="w-5 h-5"></i>
+                  </button>
+                </div>
+              ) : (
+                <button 
+                  onClick={() => setCurrentPage('login')}
+                  className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-primary hover:bg-primary-light rounded-xl shadow-md"
+                >
+                  <i data-lucide="user" className="w-4 h-4"></i>
+                  <span>{t('btn_login')}</span>
+                </button>
+              )}
+            </div>
+          </nav>
+
+          <div className="flex-1 flex relative">
+            {/* SIDEBAR */}
+            {sidebarOpen && (
+              <div onClick={() => setSidebarOpen(false)} className="fixed inset-0 z-40 bg-black/40 lg:hidden backdrop-blur-sm" />
+            )}
+
+            <aside className={`fixed top-0 bottom-0 left-0 z-40 flex flex-col w-64 bg-white border-r border-primary/10 transition-transform duration-300 lg:translate-x-0 lg:sticky lg:top-[73px] lg:h-[calc(100vh-73px)] ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+              <div className="flex items-center justify-between p-4 border-b border-primary/10 lg:hidden">
+                <div className="flex items-center gap-2">
+                  <img src="/static/logo.png" alt="AgriVerse Logo" className="w-7 h-7 object-contain rounded" onError={(e) => { e.target.style.display = 'none'; }} />
+                  <span className="font-bold text-primary">{t('app_name')}</span>
+                </div>
+                <button onClick={() => setSidebarOpen(false)} className="p-1 rounded-lg hover:bg-primary/5 text-primary">
+                  <i data-lucide="x" className="w-5 h-5"></i>
+                </button>
+              </div>
+              <nav className="flex-1 p-4 space-y-1.5 overflow-y-auto">
+                {[
+                  { id: 'home', name: t('nav_home'), icon: 'home' },
+                  { id: 'dashboard', name: t('nav_dashboard'), icon: 'layout-dashboard' },
+                  { id: 'search', name: t('nav_search'), icon: 'search' },
+                  { id: 'weather', name: t('nav_weather'), icon: 'cloud' },
+                  { id: 'scanner', name: t('nav_scanner'), icon: 'leaf' },
+                  { id: 'marketplace', name: t('nav_marketplace'), icon: 'shopping-bag' },
+                  { id: 'learning', name: t('nav_learning'), icon: 'book-open' },
+                  { id: 'contact', name: t('nav_contact'), icon: 'phone' }
+                ].map((item) => (
+                  <button
+                    key={item.id}
+                    onClick={() => { setCurrentPage(item.id); setSidebarOpen(false); }}
+                    className={`w-full flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-semibold transition-theme ${currentPage === item.id ? 'bg-primary text-white shadow-md' : 'text-primary/75 hover:bg-primary/5 hover:text-primary'}`}
+                  >
+                    <i data-lucide={item.icon} className="w-5 h-5"></i>
+                    <span>{item.name}</span>
+                  </button>
+                ))}
+              </nav>
+              <div className="p-4 border-t border-primary/10 text-center">
+                <p className="text-[11px] font-semibold text-primary-light">AgriVerse Ecosystem v1.0</p>
+                <p className="text-[10px] text-primary/40 mt-0.5">&copy; 2026 Smart Farming Ecosystem</p>
+              </div>
+            </aside>
+
+            {/* MAIN CONTENT PANELS */}
+            <main className="flex-1 flex flex-col min-w-0 p-4 sm:p-6">
+              {currentPage === 'home' && <HomePanel t={t} setCurrentPage={setCurrentPage} />}
+              {currentPage === 'dashboard' && <DashboardPanel t={t} currentUser={currentUser} setCurrentPage={setCurrentPage} />}
+              {currentPage === 'search' && <SearchPanel t={t} initialQuery={globalSearchVal} />}
+              {currentPage === 'weather' && <WeatherPanel t={t} currentUser={currentUser} />}
+              {currentPage === 'scanner' && <ScannerPanel t={t} />}
+              {currentPage === 'marketplace' && <MarketplacePanel t={t} currentUser={currentUser} />}
+              {currentPage === 'learning' && <LearningPanel t={t} />}
+              {currentPage === 'contact' && <ContactPanel t={t} />}
+              {currentPage === 'login' && <LoginPanel t={t} onLoginSuccess={handleLoginSuccess} />}
+
+              {/* FOOTER */}
+              <footer className="py-8 px-6 bg-primary/5 rounded-3xl border border-primary/10 transition-theme mt-12 text-primary">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-sm">
+                  <div>
+                    <h3 className="font-bold text-base">{t('app_name')}</h3>
+                    <p className="text-xs text-primary/75 mt-2 max-w-sm">{t('hero_subtitle')}</p>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-xs uppercase tracking-wider text-primary-light">Support Services</h4>
+                    <ul className="mt-3 space-y-2 text-xs text-primary/80">
+                      <li><a href="#learning" onClick={() => setCurrentPage('learning')} className="hover:underline">Organic Farming Tips</a></li>
+                      <li><a href="#weather" onClick={() => setCurrentPage('weather')} className="hover:underline">Weather Forecast Station</a></li>
+                      <li><a href="#scanner" onClick={() => setCurrentPage('scanner')} className="hover:underline">Plant Diseases Database</a></li>
+                    </ul>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-xs uppercase tracking-wider text-primary-light">Government Support</h4>
+                    <ul className="mt-3 space-y-2 text-xs text-primary/80 font-medium">
+                      <li><a href="#subsidy" className="hover:underline">PM-KISAN Scheme Alerts</a></li>
+                      <li><a href="#sub" className="hover:underline">Soil Health Card Subsidies</a></li>
+                    </ul>
+                  </div>
+                </div>
+              </footer>
+            </main>
+          </div>
+
+          {/* CHATBOT */}
+          <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
+            {chatOpen && (
+              <div className="flex flex-col w-[350px] sm:w-[380px] h-[450px] bg-white border border-primary/20 rounded-2xl shadow-2xl overflow-hidden mb-4 transition-theme">
+                <div className="flex items-center justify-between p-4 bg-primary text-white">
+                  <div className="flex items-center gap-2">
+                    <i data-lucide="bot" className="w-5 h-5 text-accent"></i>
+                    <div>
+                      <h3 className="font-bold text-sm leading-none">{t('chat_header')}</h3>
+                      <span className="text-[10px] text-accent/80 font-medium">Online Helper</span>
+                    </div>
+                  </div>
+                  <button onClick={() => setChatOpen(false)} className="p-1 rounded-lg hover:bg-white/10">
+                    <i data-lucide="x" className="w-4 h-4"></i>
+                  </button>
+                </div>
+                <div className="flex-1 p-4 overflow-y-auto space-y-3 bg-primary/5">
+                  {chatMessages.map(msg => (
+                    <div key={msg.id} className={`flex gap-2 max-w-[80%] ${msg.sender === 'user' ? 'ml-auto flex-row-reverse' : ''}`}>
+                      <div className={`flex items-center justify-center w-8 h-8 rounded-full text-white shrink-0 ${msg.sender === 'user' ? 'bg-primary-light' : 'bg-primary'}`}>
+                        <i data-lucide={msg.sender === 'user' ? "user" : "bot"} className="w-4 h-4"></i>
+                      </div>
+                      <div className={`p-3 rounded-2xl text-xs shadow-sm ${msg.sender === 'user' ? 'bg-primary text-white rounded-tr-none' : 'bg-white border border-primary/10 rounded-tl-none text-primary'}`}>
+                        <p>{msg.text}</p>
+                      </div>
+                    </div>
+                  ))}
+                  {chatTyping && (
+                    <div className="flex gap-2 max-w-[80%]">
+                      <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-white shrink-0">
+                        <i data-lucide="bot" className="w-4 h-4"></i>
+                      </div>
+                      <div className="p-3 bg-white border border-primary/10 rounded-2xl rounded-tl-none text-xs flex gap-1">
+                        <span className="w-1 h-1 bg-primary rounded-full animate-bounce"></span>
+                        <span className="w-1 h-1 bg-primary rounded-full animate-bounce" style={{animationDelay:'150ms'}}></span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                <form onSubmit={handleChatSubmit} className="p-3 bg-white border-t border-primary/10 flex gap-2">
+                  <input 
+                    type="text" 
+                    value={chatInput} 
+                    onChange={(e) => setChatInput(e.target.value)}
+                    placeholder={t('chat_placeholder')}
+                    className="flex-1 px-4 py-2 text-xs bg-background border border-primary/10 rounded-xl focus:outline-none"
+                  />
+                  <button type="submit" className="p-2 bg-primary text-white rounded-xl hover:bg-primary-light">
+                    <i data-lucide="send" className="w-4 h-4"></i>
+                  </button>
+                </form>
+              </div>
+            )}
+            <button 
+              onClick={() => setChatOpen(!chatOpen)}
+              className="flex items-center justify-center w-14 h-14 rounded-full bg-primary text-white shadow-xl hover:scale-105 transition-transform"
+            >
+              <i data-lucide={chatOpen ? "x" : "message-square"} className="w-6 h-6"></i>
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    // --- HOME PANEL ---
+    function HomePanel({ t, setCurrentPage }) {
+      const stats = [
+        { label: "Active Farmers Joined", value: "2,400+" },
+        { label: "AI Leaf Diagnostics", value: "15,000+" },
+        { label: "Local Trade Volume", value: "₹8.4 Lakhs" },
+        { label: "Crop Suitability Match", value: "98.2%" }
+      ];
+
+      return (
+        <div className="space-y-16">
+          <header className="p-8 md:p-14 bg-gradient-to-r from-primary to-primary-light text-white rounded-3xl overflow-hidden shadow-xl flex flex-col md:flex-row items-center gap-10">
+            <div className="flex-1 space-y-6">
+              <span className="px-4 py-1.5 bg-accent/20 border border-accent/30 text-accent font-bold text-xs uppercase tracking-wider rounded-full inline-block">Smart Agriculture Platform</span>
+              <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight leading-tight">{t('hero_title')}</h1>
+              <p className="text-sm md:text-base text-white/80 max-w-xl leading-relaxed">{t('hero_subtitle')}</p>
+              <div className="flex flex-wrap gap-4 pt-2">
+                <button onClick={() => setCurrentPage('scanner')} className="px-6 py-3 bg-accent text-primary font-bold rounded-xl hover:bg-accent-dark transition-theme flex items-center gap-2">
+                  <i data-lucide="leaf" className="w-4 h-4"></i>
+                  <span>{t('action_scan')}</span>
+                </button>
+                <button onClick={() => setCurrentPage('marketplace')} className="px-6 py-3 bg-white/10 border border-white/20 text-white font-bold rounded-xl hover:bg-white/20">
+                  {t('action_market')}
+                </button>
+              </div>
+            </div>
+            <div className="w-full md:w-1/3 max-w-sm flex items-center justify-center shrink-0">
+              <i data-lucide="sprout" className="w-32 h-32 text-accent opacity-75"></i>
+            </div>
+          </header>
+
+          <section className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+            {stats.map((stat, idx) => (
+              <div key={idx} className="p-6 bg-white border border-primary/10 rounded-2xl shadow-sm text-center">
+                <span className="text-3xl font-extrabold text-primary block">{stat.value}</span>
+                <span className="text-xs font-semibold text-primary-light block mt-1">{stat.label}</span>
+              </div>
+            ))}
+          </section>
+
+          <section className="space-y-6">
+            <h2 className="text-2xl font-bold text-primary">{t('quick_start')}</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-sm">
+              <div onClick={() => setCurrentPage('scanner')} className="p-6 bg-white border border-primary/10 rounded-2xl hover:shadow-lg cursor-pointer flex gap-4">
+                <div className="p-3 bg-green-100 text-green-700 rounded-xl"><i data-lucide="leaf"></i></div>
+                <div>
+                  <h3 className="font-bold text-primary">{t('nav_scanner')}</h3>
+                  <p className="text-xs text-primary/70 mt-1">Upload leaf photos to scan for plant diseases.</p>
+                </div>
+              </div>
+              <div onClick={() => setCurrentPage('marketplace')} className="p-6 bg-white border border-primary/10 rounded-2xl hover:shadow-lg cursor-pointer flex gap-4">
+                <div className="p-3 bg-amber-100 text-amber-700 rounded-xl"><i data-lucide="shopping-bag"></i></div>
+                <div>
+                  <h3 className="font-bold text-primary">{t('nav_marketplace')}</h3>
+                  <p className="text-xs text-primary/70 mt-1">Direct buy/sell of seeds, tools, and produce.</p>
+                </div>
+              </div>
+              <div onClick={() => setCurrentPage('weather')} className="p-6 bg-white border border-primary/10 rounded-2xl hover:shadow-lg cursor-pointer flex gap-4">
+                <div className="p-3 bg-blue-100 text-blue-700 rounded-xl"><i data-lucide="cloud"></i></div>
+                <div>
+                  <h3 className="font-bold text-primary">{t('nav_weather')}</h3>
+                  <p className="text-xs text-primary/70 mt-1">Check location forecasts, rain indexes, and alerts.</p>
+                </div>
+              </div>
+              <div onClick={() => setCurrentPage('learning')} className="p-6 bg-white border border-primary/10 rounded-2xl hover:shadow-lg cursor-pointer flex gap-4">
+                <div className="p-3 bg-purple-100 text-purple-700 rounded-xl"><i data-lucide="book-open"></i></div>
+                <div>
+                  <h3 className="font-bold text-primary">{t('nav_learning')}</h3>
+                  <p className="text-xs text-primary/70 mt-1">Read organic farming methods and video tutorials.</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section className="p-8 bg-primary/5 rounded-3xl flex flex-col lg:flex-row items-center gap-10">
+            <div className="flex-1 space-y-4">
+              <h2 className="text-3xl font-extrabold text-primary">{t('intro_title')}</h2>
+              <p className="text-sm text-primary/80 leading-relaxed">{t('intro_desc')}</p>
+            </div>
+            <div className="w-full lg:w-1/3 shrink-0">
+              <img src="https://images.unsplash.com/photo-1500937386664-56d159687c2f?auto=format&fit=crop&w=400&q=80" alt="Farm Field" className="w-full h-48 object-cover rounded-2xl" />
+            </div>
+          </section>
+        </div>
+      );
+    }
+
+    // --- DASHBOARD PANEL ---
+    function DashboardPanel({ t, currentUser, setCurrentPage }) {
+      const activeUserId = currentUser?.id || 1;
+      const [summary, setSummary] = useState(null);
+      const [tasks, setTasks] = useState([]);
+      const [loading, setLoading] = useState(true);
+      const [taskInput, setTaskInput] = useState('');
+      const [taskDate, setTaskDate] = useState(() => new Date().toISOString().split('T')[0]);
+
+      const fetchDashboard = async () => {
+        try {
+          setLoading(true);
+          const res = await API.getDashboard(activeUserId);
+          setSummary(res.data);
+          setTasks(res.data.tasks || []);
+        } catch (err) {
+          console.error(err);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      useEffect(() => {
+        fetchDashboard();
+      }, [activeUserId]);
+
+      const handleAddTask = async (e) => {
+        e.preventDefault();
+        if (!taskInput.trim()) return;
+        try {
+          const res = await API.createTask(activeUserId, taskInput, taskDate);
+          setTasks(prev => [...prev, res.data]);
+          setTaskInput('');
+        } catch (err) {
+          console.error(err);
+        }
+      };
+
+      const handleToggleTask = async (taskId, current) => {
+        try {
+          const res = await API.updateTask(taskId, !current);
+          setTasks(prev => prev.map(t => t.id === taskId ? res.data : t));
+        } catch (err) {
+          console.error(err);
+        }
+      };
+
+      const handleDeleteTask = async (taskId) => {
+        try {
+          await API.deleteTask(taskId);
+          setTasks(prev => prev.filter(t => t.id !== taskId));
+        } catch (err) {
+          console.error(err);
+        }
+      };
+
+      if (loading) {
+        return (
+          <div className="flex flex-col items-center justify-center py-24 gap-2">
+            <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+            <span className="text-xs font-bold text-primary/70">{t('loading')}</span>
+          </div>
+        );
+      }
+
+      return (
+        <div className="space-y-8">
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="text-3xl font-extrabold text-primary">{t('dash_title')}</h1>
+              <p className="text-xs font-bold text-primary-light mt-1">Farm: {currentUser?.location || "Bangalore (Demo User)"}</p>
+            </div>
+            {!currentUser && (
+              <button onClick={() => setCurrentPage('login')} className="px-3 py-1 bg-accent/20 border border-accent text-primary text-xs font-bold rounded-lg">
+                Log In to Customize
+              </button>
+            )}
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <DashboardCard title="Crop Varieties Grown" value={summary?.crops_count || 10} description="Ragi, Tomato, Chilli, Coffee, Wheat." icon="sprout" colorClass="bg-green-100 text-green-700" />
+            <DashboardCard title="Market Listings" value={summary?.marketplace_count || 10} description="Seeds, fertilizers, agricultural implements." icon="trending-up" colorClass="bg-amber-100 text-amber-700" />
+            <DashboardCard title="Soil pH Quality" value="6.5 pH" description={t('dash_soil_desc')} icon="activity" colorClass="bg-purple-100 text-purple-700" />
+            <DashboardCard title="Irrigation Logs" value="Watered" description={t('dash_irrigation_desc')} icon="droplet" colorClass="bg-blue-100 text-blue-700" />
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Task list manager */}
+            <div className="lg:col-span-2 p-6 bg-white border border-primary/10 rounded-3xl shadow-sm space-y-4">
+              <h3 className="font-bold text-lg text-primary">{t('dash_tasks')}</h3>
+              
+              <form onSubmit={handleAddTask} className="flex flex-col sm:flex-row gap-3">
+                <input 
+                  type="text" 
+                  value={taskInput} 
+                  onChange={e => setTaskInput(e.target.value)}
+                  placeholder={t('task_placeholder')} 
+                  className="flex-1 px-4 py-2.5 text-xs bg-background border border-primary/10 rounded-xl"
+                  required
+                />
+                <input 
+                  type="date" 
+                  value={taskDate} 
+                  onChange={e => setTaskDate(e.target.value)}
+                  className="px-3 py-2 text-xs bg-background border border-primary/10 rounded-xl text-primary"
+                  required
+                />
+                <button type="submit" className="px-5 py-2.5 bg-primary text-white font-bold text-xs rounded-xl hover:bg-primary-light">
+                  {t('btn_add_task')}
+                </button>
+              </form>
+
+              <div className="space-y-2 mt-4 max-h-[300px] overflow-y-auto">
+                {tasks.length === 0 ? (
+                  <div className="text-center py-6 text-primary/40 text-xs font-semibold">{t('no_tasks')}</div>
+                ) : (
+                  tasks.map(task => (
+                    <div key={task.id} className={`flex items-center justify-between p-3 border border-primary/10 rounded-2xl ${task.completed_status ? 'bg-primary/5 opacity-60' : 'bg-white'}`}>
+                      <div className="flex items-center gap-3">
+                        <button onClick={() => handleToggleTask(task.id, task.completed_status)}>
+                          <i data-lucide={task.completed_status ? "check-square" : "square"} className="w-5 h-5 text-primary"></i>
+                        </button>
+                        <div>
+                          <span className={`text-xs font-bold text-primary block ${task.completed_status ? 'line-through' : ''}`}>{task.task_name}</span>
+                          <span className="text-[10px] text-primary/50 block font-semibold">Due: {task.due_date}</span>
+                        </div>
+                      </div>
+                      <button onClick={() => handleDeleteTask(task.id)} className="text-red-500 hover:bg-red-50 p-1.5 rounded-lg">
+                        <i data-lucide="trash" className="w-4 h-4"></i>
+                      </button>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+
+            {/* Weather + Crop Advice */}
+            <div className="space-y-6">
+              {summary?.weather && (
+                <div className="p-6 bg-gradient-to-br from-blue-50 to-sky-100/30 border border-primary/10 rounded-3xl">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <span className="text-[10px] font-bold text-primary-light uppercase">Location</span>
+                      <h4 className="font-extrabold text-lg text-primary leading-tight">{summary.weather.city}</h4>
+                      <p className="text-xs font-semibold text-primary/70 capitalize mt-1">{summary.weather.condition}</p>
+                    </div>
+                    <i data-lucide="cloud-rain" className="w-10 h-10 text-blue-500"></i>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2 text-center mt-6 pt-4 border-t border-primary/10">
+                    <div>
+                      <span className="text-[9px] text-primary-light font-bold block">TEMP</span>
+                      <strong className="text-base text-primary font-black">{Math.round(summary.weather.temperature)}°C</strong>
+                    </div>
+                    <div>
+                      <span className="text-[9px] text-primary-light font-bold block">HUMIDITY</span>
+                      <strong className="text-base text-primary font-black">{Math.round(summary.weather.humidity)}%</strong>
+                    </div>
+                    <div>
+                      <span className="text-[9px] text-primary-light font-bold block">RAIN</span>
+                      <strong className="text-base text-primary font-black">{summary.weather.rainfall}mm</strong>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div className="p-6 bg-white border border-primary/10 rounded-3xl">
+                <h4 className="font-bold text-sm text-primary">{t('dash_prediction')}</h4>
+                <p className="text-xs text-primary/70 mt-2 leading-relaxed">{t('dash_prediction_desc')}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // --- SEARCH PANEL ---
+    function SearchPanel({ t, initialQuery }) {
+      const [query, setQuery] = useState(initialQuery || '');
+      const [results, setResults] = useState(null);
+      const [isListening, setIsListening] = useState(false);
+      const [loading, setLoading] = useState(false);
+
+      useEffect(() => {
+        if (initialQuery) {
+          setQuery(initialQuery);
+          handleSearch(initialQuery);
+        }
+      }, [initialQuery]);
+
+      const handleSearch = async (val) => {
+        const q = val || query;
+        if (!q.trim()) return;
+        try {
+          setLoading(true);
+          const res = await API.globalSearch(q);
+          setResults(res.data);
+        } catch (err) {
+          console.error(err);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      const handleMic = () => {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+          alert(t('search_mic_error'));
+          return;
+        }
+        const recognition = new SpeechRecognition();
+        recognition.lang = 'en-IN';
+        recognition.onstart = () => setIsListening(true);
+        recognition.onresult = (e) => {
+          const txt = e.results[0][0].transcript;
+          setQuery(txt);
+          handleSearch(txt);
+        };
+        recognition.onend = () => setIsListening(false);
+        recognition.start();
+      };
+
+      return (
+        <div className="max-w-4xl mx-auto space-y-8">
+          <div className="text-center space-y-2">
+            <h1 className="text-3xl font-extrabold text-primary">{t('search_title')}</h1>
+            <p className="text-xs text-primary/60 max-w-sm mx-auto">Ask about seeds, fertilizers or farm schedules.</p>
+          </div>
+
+          <div className="relative max-w-xl mx-auto">
+            <form onSubmit={e => { e.preventDefault(); handleSearch(); }} className="flex gap-2 p-1.5 bg-white border-2 border-primary/15 rounded-2xl shadow-sm focus-within:border-primary">
+              <i data-lucide="search" className="w-5 h-5 text-primary/45 ml-2 mt-2"></i>
+              <input 
+                type="text" 
+                value={query} 
+                onChange={e => setQuery(e.target.value)} 
+                placeholder={t('search_placeholder')}
+                className="flex-1 px-2 py-2 text-xs bg-transparent border-none focus:outline-none"
+              />
+              <button 
+                type="button" 
+                onClick={handleMic} 
+                className={`p-2 rounded-xl ${isListening ? 'bg-red-500 text-white' : 'bg-primary/5 text-primary'}`}
+              >
+                <i data-lucide="mic" className="w-4 h-4"></i>
+              </button>
+              <button type="submit" className="px-4 py-2 bg-primary text-white font-bold text-xs rounded-xl hover:bg-primary-light">
+                Search
+              </button>
+            </form>
+          </div>
+
+          {loading ? (
+            <div className="flex justify-center py-20"><div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div></div>
+          ) : results ? (
+            <div className="space-y-8">
+              {results.crops?.length > 0 && (
+                <div className="space-y-3">
+                  <h3 className="font-bold text-sm text-primary-light uppercase tracking-wider flex items-center gap-1.5"><i data-lucide="sprout" className="w-4 h-4"></i> {t('search_results_crops')}</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {results.crops.map(c => (
+                      <div key={c.id} className="p-4 bg-white border border-primary/10 rounded-2xl space-y-1">
+                        <strong className="text-sm text-primary font-bold">{c.name}</strong>
+                        <p className="text-xs text-primary/70">Season: <b>{c.season}</b> | Disease: <b>{c.disease}</b></p>
+                        <span className="text-[10px] text-primary/50 block">Fertilizer advice: {c.fertilizer}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {results.marketplace?.length > 0 && (
+                <div className="space-y-3">
+                  <h3 className="font-bold text-sm text-primary-light uppercase tracking-wider flex items-center gap-1.5"><i data-lucide="shopping-bag" className="w-4 h-4"></i> {t('search_results_market')}</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {results.marketplace.map(m => (
+                      <div key={m.id} className="p-4 bg-white border border-primary/10 rounded-2xl flex justify-between items-start">
+                        <div>
+                          <strong className="text-xs font-bold text-primary block">{m.name}</strong>
+                          <span className="text-[10px] text-primary-light font-medium bg-primary/5 px-2 py-0.5 rounded-full inline-block mt-1">{m.category}</span>
+                        </div>
+                        <span className="text-xs font-black text-primary">₹{m.price}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {(!results.crops || results.crops.length === 0) && (!results.marketplace || results.marketplace.length === 0) && (
+                <div className="text-center py-10 text-primary/45 font-bold">No results found. Try "Rice" or "Seeds".</div>
+              )}
+            </div>
+          ) : null}
+        </div>
+      );
+    }
+
+    // --- WEATHER PANEL ---
+    function WeatherPanel({ t, currentUser }) {
+      const [city, setCity] = useState(currentUser?.location || 'Bangalore');
+      const [cityInput, setCityInput] = useState('');
+      const [report, setReport] = useState(null);
+      const [loading, setLoading] = useState(true);
+
+      const fetchWeatherReport = async (cityName) => {
+        try {
+          setLoading(true);
+          const res = await API.getWeather(cityName);
+          setReport(res.data);
+        } catch (err) {
+          console.error(err);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      useEffect(() => {
+        fetchWeatherReport(city);
+      }, [city]);
+
+      const handleSearch = (e) => {
+        e.preventDefault();
+        if (!cityInput.trim()) return;
+        setCity(cityInput.trim());
+      };
+
+      return (
+        <div className="max-w-5xl mx-auto space-y-8">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+              <h1 className="text-3xl font-extrabold text-primary">{t('weather_title')}</h1>
+              <p className="text-xs text-primary/60 font-semibold mt-1">Live forecasts direct from local agricultural meteorology stations.</p>
+            </div>
+            <form onSubmit={handleSearch} className="flex gap-2 w-full md:max-w-xs">
+              <input 
+                type="text" 
+                value={cityInput} 
+                onChange={e => setCityInput(e.target.value)}
+                placeholder="Search city e.g. Mumbai" 
+                className="flex-1 px-4 py-2.5 text-xs bg-white border border-primary/10 rounded-xl"
+              />
+              <button type="submit" className="p-2.5 bg-primary text-white rounded-xl hover:bg-primary-light">
+                <i data-lucide="search" className="w-4 h-4"></i>
+              </button>
+            </form>
+          </div>
+
+          {loading ? (
+            <div className="flex justify-center py-20"><div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div></div>
+          ) : report && (
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="p-6 bg-gradient-to-br from-blue-50 to-sky-100/30 border border-primary/10 rounded-3xl flex flex-col justify-between">
+                <div>
+                  <span className="text-[10px] font-bold text-primary-light block">Report Location</span>
+                  <h3 className="text-2xl font-extrabold text-primary mt-1">{report.city}</h3>
+                  <span className="text-xs font-semibold text-primary/70 block mt-2 capitalize">{report.condition}</span>
+                </div>
+                <div className="grid grid-cols-3 gap-2 mt-12 pt-4 border-t border-primary/10 text-center">
+                  <div>
+                    <span className="text-[9px] font-bold text-primary/50 block">TEMP</span>
+                    <strong className="text-sm font-extrabold text-primary block">{Math.round(report.temperature)}°C</strong>
+                  </div>
+                  <div>
+                    <span className="text-[9px] font-bold text-primary/50 block">HUMIDITY</span>
+                    <strong className="text-sm font-extrabold text-primary block">{Math.round(report.humidity)}%</strong>
+                  </div>
+                  <div>
+                    <span className="text-[9px] font-bold text-primary/50 block">RAIN</span>
+                    <strong className="text-sm font-extrabold text-primary block">{report.rainfall}mm</strong>
+                  </div>
+                </div>
+              </div>
+
+              <div className="lg:col-span-2 space-y-6">
+                <div className="p-6 bg-white border border-primary/10 rounded-3xl space-y-3">
+                  <h4 className="font-bold text-sm text-primary">{t('weather_alerts')}</h4>
+                  <div className="p-4 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl text-xs flex gap-2">
+                    <i data-lucide="alert-triangle" className="w-4 h-4 shrink-0"></i>
+                    <span>{report.rainfall > 8 ? t('weather_warning_rain') : t('weather_no_alerts')}</span>
+                  </div>
+                </div>
+
+                <div className="p-6 bg-white border border-primary/10 rounded-3xl">
+                  <h4 className="font-bold text-sm text-primary mb-3">5-Day Forecast Indications</h4>
+                  <div className="grid grid-cols-5 gap-2 text-center text-xs">
+                    {["Mon", "Tue", "Wed", "Thu", "Fri"].map((day, idx) => (
+                      <div key={idx} className="p-3 bg-primary/5 border border-primary/5 rounded-xl">
+                        <span className="text-[10px] font-bold text-primary/60 block">{day}</span>
+                        <i data-lucide="sun" className="w-4 h-4 mx-auto my-2 text-amber-500"></i>
+                        <strong className="text-xs font-black text-primary block">{Math.round(report.temperature + Math.sin(idx)*2)}°C</strong>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // --- LEAF SCANNER PANEL ---
+    function ScannerPanel({ t }) {
+      const [preview, setPreview] = useState('');
+      const [diagnostics, setDiagnostics] = useState(null);
+      const [loading, setLoading] = useState(false);
+
+      const runDiagnosis = async (filename) => {
+        try {
+          setLoading(true);
+          setDiagnostics(null);
+          // Simulating file upload to FastAPI backend by creating a blob representing a mockup file
+          const blob = new Blob(['mockup leaf file'], { type: 'image/jpeg' });
+          const file = new File([blob], filename, { type: 'image/jpeg' });
+          
+          setPreview('https://images.unsplash.com/photo-1599599810769-bcde5a160d32?auto=format&fit=crop&w=300&q=80');
+          const res = await API.uploadLeaf(file);
+          setDiagnostics(res.data);
+        } catch (err) {
+          console.error(err);
+          alert('Diagnosis service error. Verify the FastAPI server is running.');
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      const handleFileUpload = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        setPreview(URL.createObjectURL(file));
+        runDiagnosis(file.name);
+      };
+
+      return (
+        <div className="max-w-4xl mx-auto space-y-8">
+          <div className="text-center space-y-2">
+            <h1 className="text-3xl font-extrabold text-primary">{t('scanner_title')}</h1>
+            <p className="text-xs text-primary/60 max-w-sm mx-auto">{t('scanner_subtitle')}</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+            <div className="space-y-6">
+              <div 
+                className="w-full h-52 border-2 border-dashed border-primary/20 bg-primary/5 rounded-2xl flex flex-col items-center justify-center p-4 cursor-pointer"
+                onClick={() => document.getElementById('standalone-file').click()}
+              >
+                <input id="standalone-file" type="file" onChange={handleFileUpload} className="hidden" />
+                {preview ? (
+                  <img src={preview} alt="preview" className="h-full w-full object-contain" />
+                ) : (
+                  <div className="text-center space-y-2">
+                    <i data-lucide="upload" className="w-8 h-8 mx-auto text-primary/45"></i>
+                    <span className="text-xs font-bold text-primary block">{t('scanner_drop')}</span>
+                  </div>
+                )}
+              </div>
+
+              <div className="p-5 bg-white border border-primary/10 rounded-2xl">
+                <span className="text-[10px] font-bold text-primary-light uppercase tracking-wider block mb-3">AI presets</span>
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <button onClick={() => runDiagnosis('tomato_leaf_spot_early_blight.jpg')} className="p-2 border border-red-200 bg-red-50 text-red-700 rounded-lg text-left">🍅 Tomato (Blight)</button>
+                  <button onClick={() => runDiagnosis('rice_paddy_fungus_blast.jpg')} className="p-2 border border-yellow-200 bg-yellow-50 text-yellow-700 rounded-lg text-left">🌾 Rice Blast</button>
+                  <button onClick={() => runDiagnosis('coffee_rust.jpg')} className="p-2 border border-orange-200 bg-orange-50 text-orange-700 rounded-lg text-left">☕ Coffee Rust</button>
+                  <button onClick={() => runDiagnosis('healthy_plant.jpg')} className="p-2 border border-green-200 bg-green-50 text-green-700 rounded-lg text-left">🌱 Healthy leaf</button>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              {loading ? (
+                <div className="p-12 text-center border border-primary/10 rounded-2xl bg-white"><div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div><p className="text-xs font-bold text-primary/60 mt-3">Running cellular AI scanning...</p></div>
+              ) : diagnostics ? (
+                <div className="p-6 bg-white border border-primary/10 rounded-2xl space-y-4">
+                  <h3 className="font-bold text-sm text-primary border-b border-primary/10 pb-2">{t('scanner_result')}</h3>
+                  <div>
+                    <span className="text-[10px] text-primary/50 font-bold block">DIAGNOSIS</span>
+                    <strong className="text-lg font-black text-primary block">{diagnostics.disease}</strong>
+                    <span className="text-xs font-bold text-primary-light block mt-1">Accuracy: {Math.round(diagnostics.confidence * 100)}%</span>
+                  </div>
+                  <p className="text-xs text-primary/80 leading-relaxed bg-primary/5 p-3.5 rounded-xl border border-primary/5">{diagnostics.description}</p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                    <div className="p-3 bg-green-50 border border-green-200 text-green-800 rounded-xl">
+                      <span className="text-[10px] font-bold text-green-600 block">ORGANIC REMEDY</span>
+                      <p className="mt-1 font-medium leading-relaxed">{diagnostics.organic_treatment}</p>
+                    </div>
+                    <div className="p-3 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl">
+                      <span className="text-[10px] font-bold text-amber-600 block">CHEMICAL PATHWAY</span>
+                      <p className="mt-1 font-medium leading-relaxed">{diagnostics.remedy}</p>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="p-12 text-center text-primary/40 font-bold border border-dashed border-primary/15 rounded-2xl py-24">Diagnostics results will populate here.</div>
+              )}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // --- MARKETPLACE PANEL ---
+    function MarketplacePanel({ t, currentUser }) {
+      const [products, setProducts] = useState([]);
+      const [cat, setCat] = useState('');
+      const [loading, setLoading] = useState(true);
+      const [formOpen, setFormOpen] = useState(false);
+
+      // Form
+      const [name, setName] = useState('');
+      const [price, setPrice] = useState('');
+      const [category, setCategory] = useState('Seeds');
+      const [contact, setContact] = useState('');
+
+      const fetchMarket = async (filterCat = '') => {
+        try {
+          setLoading(true);
+          const res = await API.getMarketplace('', filterCat);
+          setProducts(res.data);
+        } catch (err) {
+          console.error(err);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      useEffect(() => {
+        fetchMarket(cat);
+      }, [cat]);
+
+      const handleSubmit = async (e) => {
+        e.preventDefault();
+        if (!name || !price) return;
+        try {
+          const res = await API.createProduct({
+            product_name: name,
+            category,
+            price: parseFloat(price),
+            seller: currentUser?.farmer_name || 'Independent Farmer',
+            contact: contact || currentUser?.email || '+91 99999 88888',
+            description: "Direct listing from farmer."
+          });
+          setProducts(prev => [res.data, ...prev]);
+          setName('');
+          setPrice('');
+          setContact('');
+          setFormOpen(false);
+          alert(t('market_list_success'));
+        } catch (err) {
+          console.error(err);
+        }
+      };
+
+      return (
+        <div className="space-y-8">
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="text-3xl font-extrabold text-primary">{t('market_title')}</h1>
+              <p className="text-xs text-primary/60 font-semibold mt-1">{t('market_subtitle')}</p>
+            </div>
+            <button onClick={() => setFormOpen(!formOpen)} className="px-4 py-2 bg-primary text-white font-bold text-xs rounded-xl shadow-sm hover:bg-primary-light">
+              {formOpen ? "Close Panel" : t('market_sell_item')}
+            </button>
+          </div>
+
+          {formOpen && (
+            <form onSubmit={handleSubmit} className="p-6 bg-white border border-primary/10 rounded-2xl max-w-xl mx-auto space-y-4">
+              <h3 className="font-bold text-sm text-primary">{t('market_sell_item')}</h3>
+              <div className="grid grid-cols-2 gap-4 text-xs">
+                <div>
+                  <label className="font-bold">Product Name *</label>
+                  <input type="text" value={name} onChange={e => setName(e.target.value)} className="w-full mt-1 p-2 bg-background border border-primary/10 rounded-xl" required />
+                </div>
+                <div>
+                  <label className="font-bold">Category</label>
+                  <select value={category} onChange={e => setCategory(e.target.value)} className="w-full mt-1 p-2 bg-background border border-primary/10 rounded-xl">
+                    <option value="Seeds">{t('market_filter_seeds')}</option>
+                    <option value="Fertilizers">{t('market_filter_fert')}</option>
+                    <option value="Farming Tools">{t('market_filter_tools')}</option>
+                    <option value="Crops">{t('market_filter_crops')}</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="font-bold">Price (₹) *</label>
+                  <input type="number" value={price} onChange={e => setPrice(e.target.value)} className="w-full mt-1 p-2 bg-background border border-primary/10 rounded-xl" required />
+                </div>
+                <div>
+                  <label className="font-bold">Contact Phone</label>
+                  <input type="text" value={contact} onChange={e => setContact(e.target.value)} className="w-full mt-1 p-2 bg-background border border-primary/10 rounded-xl" />
+                </div>
+              </div>
+              <button type="submit" className="w-full py-2.5 bg-primary text-white font-bold text-xs rounded-xl">List Product</button>
+            </form>
+          )}
+
+          <div className="flex gap-2 overflow-x-auto pb-1 text-xs font-bold">
+            {[
+              { val: '', label: t('market_filter_all') },
+              { val: 'Seeds', label: t('market_filter_seeds') },
+              { val: 'Fertilizers', label: t('market_filter_fert') },
+              { val: 'Farming Tools', label: t('market_filter_tools') },
+              { val: 'Crops', label: t('market_filter_crops') }
+            ].map(c => (
+              <button key={c.val} onClick={() => setCat(c.val)} className={`px-4 py-2 border rounded-xl shrink-0 ${cat === c.val ? 'bg-primary text-white border-primary' : 'bg-white text-primary border-primary/10'}`}>
+                {c.label}
+              </button>
+            ))}
+          </div>
+
+          {loading ? (
+            <div className="flex justify-center py-20"><div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div></div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {products.map(prod => (
+                <ProductCard key={prod.id} product={prod} t={t} />
+              ))}
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // --- LEARNING PANEL ---
+    function LearningPanel({ t }) {
+      return (
+        <div className="max-w-4xl mx-auto space-y-8">
+          <div>
+            <h1 className="text-3xl font-extrabold text-primary">AgriVerse Learning Center</h1>
+            <p className="text-xs text-primary/60 font-semibold mt-1">Read tutorials and watch video courses on vermiculture and organic farming methods.</p>
+          </div>
+
+          <div className="space-y-6">
+            <article className="p-6 bg-white border border-primary/10 rounded-2xl space-y-2">
+              <span className="px-2.5 py-0.5 bg-green-100 text-green-800 text-[10px] font-bold rounded-md uppercase">Organic Composting</span>
+              <h3 className="text-base font-extrabold text-primary">How to build a Vermicomposting Pit</h3>
+              <p className="text-xs text-primary/70 leading-relaxed">
+                Vermicomposting uses earthworms to break down organic wastes (vegetable scraps, dry leaves) into compost rich in nitrates and mineral blocks. Keep the bedding moist and cover the pit to preserve shade.
+              </p>
+            </article>
+
+            <article className="p-6 bg-white border border-primary/10 rounded-2xl space-y-2">
+              <span className="px-2.5 py-0.5 bg-blue-100 text-blue-800 text-[10px] font-bold rounded-md uppercase">Crop Rotation</span>
+              <h3 className="text-base font-extrabold text-primary">Alternating Cereals with Legumes</h3>
+              <p className="text-xs text-primary/70 leading-relaxed">
+                Alternating heavy feeders (Rice, Maize) with nitrogen-fixing pulses (Groundnut, Tur Dal) increases soil fertility naturally, reducing dependence on chemical urea fertilizers.
+              </p>
+            </article>
+          </div>
+        </div>
+      );
+    }
+
+    // --- CONTACT PANEL ---
+    function ContactPanel({ t }) {
+      const [name, setName] = useState('');
+      const [email, setEmail] = useState('');
+      const [message, setMessage] = useState('');
+      const [sent, setSent] = useState(false);
+
+      const handleSend = (e) => {
+        e.preventDefault();
+        setSent(true);
+        setName('');
+        setEmail('');
+        setMessage('');
+        setTimeout(() => setSent(false), 4000);
+      };
+
+      return (
+        <div className="max-w-4xl mx-auto space-y-8">
+          <div>
+            <h1 className="text-3xl font-extrabold text-primary">{t('contact_title')}</h1>
+            <p className="text-xs text-primary/60 mt-1">Connect with support hubs in Bangalore and Mumbai.</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch">
+            <form onSubmit={handleSend} className="p-6 bg-white border border-primary/10 rounded-2xl space-y-4">
+              <h3 className="font-bold text-sm text-primary">Email Support Desk</h3>
+              {sent && <div className="p-3 bg-green-50 border border-green-200 text-green-700 text-xs font-bold rounded-lg">{t('contact_success')}</div>}
+              <div className="space-y-3 text-xs">
+                <div>
+                  <label className="font-bold">{t('contact_name')}</label>
+                  <input type="text" value={name} onChange={e => setName(e.target.value)} className="w-full mt-1 p-2 bg-background border border-primary/10 rounded-xl" required />
+                </div>
+                <div>
+                  <label className="font-bold">{t('contact_email')}</label>
+                  <input type="email" value={email} onChange={e => setEmail(e.target.value)} className="w-full mt-1 p-2 bg-background border border-primary/10 rounded-xl" required />
+                </div>
+                <div>
+                  <label className="font-bold">{t('contact_msg')}</label>
+                  <textarea value={message} onChange={e => setMessage(e.target.value)} rows={3} className="w-full mt-1 p-2 bg-background border border-primary/10 rounded-xl" required></textarea>
+                </div>
+              </div>
+              <button type="submit" className="w-full py-2.5 bg-primary text-white font-bold text-xs rounded-xl">{t('contact_send')}</button>
+            </form>
+
+            <div className="p-6 bg-white border border-primary/10 rounded-2xl space-y-4 text-xs">
+              <h3 className="font-bold text-sm text-primary">Office Hubs</h3>
+              <div className="space-y-3">
+                <div>
+                  <strong className="block font-bold">Bangalore Center (HQ)</strong>
+                  <span>Krishi Bhawan, Hudson Circle, Bengaluru, KA - 560001</span>
+                </div>
+                <div>
+                  <strong className="block font-bold">Mumbai Center</strong>
+                  <span>Plot 12, APMC Market Yard, Vashi, Navi Mumbai, MH - 400703</span>
+                </div>
+                <div className="pt-3 border-t border-primary/10 font-bold">
+                  <p>Helpline: +91 1800 123 4567 (Toll-Free)</p>
+                  <p className="mt-1">Email: help@agriverse.com</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // --- LOGIN PANEL ---
+    function LoginPanel({ t, onLoginSuccess }) {
+      const [email, setEmail] = useState('');
+      const [password, setPassword] = useState('');
+      const [isReg, setIsReg] = useState(false);
+      const [name, setName] = useState('');
+      const [loc, setLoc] = useState('Bangalore');
+
+      const handleAuth = async (e) => {
+        e.preventDefault();
+        try {
+          if (isReg) {
+            const res = await API.register(name, email, loc, 'English', password);
+            onLoginSuccess(res.data);
+          } else {
+            const res = await API.login(email, password);
+            onLoginSuccess(res.data);
+          }
+        } catch (err) {
+          console.error(err);
+          alert('Auth failed. Verify database seeds and server are active.');
+        }
+      };
+
+      return (
+        <div className="max-w-md mx-auto py-10">
+          <form onSubmit={handleAuth} className="p-8 bg-white border border-primary/10 rounded-3xl shadow-lg space-y-4">
+            <h2 className="text-xl font-bold text-primary text-center">{isReg ? "Create Farmer Profile" : t('btn_login')}</h2>
+            <div className="space-y-3 text-xs">
+              {isReg && (
+                <div>
+                  <label className="font-bold">Farmer Name</label>
+                  <input type="text" value={name} onChange={e => setName(e.target.value)} className="w-full mt-1 p-2 bg-background border border-primary/10 rounded-xl" required />
+                </div>
+              )}
+              <div>
+                <label className="font-bold">Email Address</label>
+                <input type="email" value={email} onChange={e => setEmail(e.target.value)} className="w-full mt-1 p-2 bg-background border border-primary/10 rounded-xl" required />
+              </div>
+              {isReg && (
+                <div>
+                  <label className="font-bold">Location (City/Place in India)</label>
+                  <input 
+                    type="text" 
+                    value={loc} 
+                    onChange={e => setLoc(e.target.value)} 
+                    placeholder="e.g. Punjab, Delhi, Coimbatore, Shimla..." 
+                    className="w-full mt-1 p-2 bg-background border border-primary/10 rounded-xl" 
+                    required 
+                  />
+                </div>
+              )}
+              <div>
+                <label className="font-bold">Password</label>
+                <input type="password" value={password} onChange={e => setPassword(e.target.value)} className="w-full mt-1 p-2 bg-background border border-primary/10 rounded-xl" required />
+              </div>
+            </div>
+            <button type="submit" className="w-full py-2.5 bg-primary text-white font-bold text-xs rounded-xl shadow-sm">{isReg ? "Register" : "Log In"}</button>
+            <div className="text-center pt-2 text-[11px] font-bold">
+              <button type="button" onClick={() => setIsReg(!isReg)} className="text-primary-light hover:underline">
+                {isReg ? "Switch to Sign In" : "Register new Farmer profile"}
+              </button>
+            </div>
+          </form>
+        </div>
+      );
+    }
+
+    const container = document.getElementById('root');
+    const root = ReactDOM.createRoot(container);
+    root.render(<App />);
+  </script>
+</body>
+</html>
