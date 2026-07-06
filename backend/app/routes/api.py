@@ -50,9 +50,9 @@ def login(login_data: UserLogin, db: Session = Depends(get_db)):
 def get_city_weather(city: str, db: Session = Depends(get_db)):
     city_clean = city.strip()
     
-    # Try fetching coordinates via Open-Meteo Geocoding API
+    # Try fetching coordinates via Open-Meteo Geocoding API (asking for 10 results to search for India match)
     encoded_city = urllib.parse.quote(city_clean)
-    geocode_url = f"https://geocoding-api.open-meteo.com/v1/search?name={encoded_city}&count=1"
+    geocode_url = f"https://geocoding-api.open-meteo.com/v1/search?name={encoded_city}&count=10"
     
     lat, lon, resolved_name = None, None, city_clean
     try:
@@ -61,12 +61,24 @@ def get_city_weather(city: str, db: Session = Depends(get_db)):
             res_data = json.loads(response.read().decode())
             results = res_data.get("results", [])
             if results:
-                lat = results[0].get("latitude")
-                lon = results[0].get("longitude")
-                resolved_name = results[0].get("name")
-                country = results[0].get("country", "")
+                # Prioritize India in results
+                selected_result = results[0]
+                for r in results:
+                    if r.get("country", "").strip().lower() == "india":
+                        selected_result = r
+                        break
+                
+                lat = selected_result.get("latitude")
+                lon = selected_result.get("longitude")
+                resolved_name = selected_result.get("name")
+                country = selected_result.get("country", "")
+                state = selected_result.get("admin1", "")
+                
                 if country:
-                    resolved_name = f"{resolved_name}, {country}"
+                    if state:
+                        resolved_name = f"{resolved_name}, {state}, {country}"
+                    else:
+                        resolved_name = f"{resolved_name}, {country}"
     except Exception as e:
         print(f"Failed to geocode city '{city_clean}': {e}")
         
